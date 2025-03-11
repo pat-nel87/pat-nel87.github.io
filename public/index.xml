@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Home on Patrick Nelson | Software Engineer</title>
+    <link>https://pat-nel87.github.io/</link>
+    <description>Recent content in Home on Patrick Nelson | Software Engineer</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 28 Mar 2024 15:00:00 +0000</lastBuildDate>
+    <atom:link href="https://pat-nel87.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>🙋‍♂️ About Me</title>
+      <link>https://pat-nel87.github.io/about.html</link>
+      <pubDate>Thu, 28 Mar 2024 15:00:00 +0000</pubDate>
+      <guid>https://pat-nel87.github.io/about.html</guid>
+      <description>&lt;h2 id=&#34;hello-im-patrick-nelson-&#34;&gt;Hello, I&amp;rsquo;m Patrick Nelson 👋&lt;/h2&gt;&#xA;&lt;p&gt;I am a passionate and creative software engineer with a strong background in developing innovative software solutions. My journey in the world of technology began at a young age when I discovered my love for coding. Since then, I have honed my skills and expertise to become a proficient developer.&lt;/p&gt;&#xA;&lt;h2 id=&#34;my-expertise&#34;&gt;My Expertise&lt;/h2&gt;&#xA;&lt;p&gt;I specialize in building robust and scalable web applications using modern technologies such as JavaScript, React, and Node.js. I have experience working with both front-end and back-end technologies, allowing me to develop full-stack solutions that meet the needs of my clients.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
