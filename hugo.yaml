@@ -17,7 +17,8 @@ menus:
       name: Tags
       url: /tags
       weight: 40
-paginate: 10
+paginate: 
+  pagerSize: 10
 permalinks:
   blog: "/blog/:year/:month/:day/:title/"
 taxonomies:
