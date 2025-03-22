@@ -40,11 +40,9 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
       
-      - name: Update submodules
-        run: git submodule update --init --recursive 
-
       - name: Build with Hugo
         run: |
+          git submodule update --init --recursive 
           hugo \
             --gc \
             --minify \
