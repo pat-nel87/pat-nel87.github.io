@@ -1,0 +1,4 @@
+baseURL = 'https://pat-nel87.github.io/'
+languageCode = 'en-us'
+title = 'Patrick Nelson | Software Engineer'
+theme = 'terminal'
