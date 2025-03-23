@@ -52,7 +52,7 @@ params:
       url: https://github.com/pat-nel87
     - name: linkedin
       url: https://linkedin.com/in/patrick-nelson-1b41561b6/
-
+  disqus: "" # leave blank no disqus acct
 module:
   hugoVersion:
     extended: false
