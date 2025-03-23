@@ -57,7 +57,6 @@ jobs:
 
       - name: Convert SVG to HTML
         run: |
-          mkdir -p layouts/partials/content/svg
           go run svg-to-html.go svg-files/${{ github.event.inputs.icon_name }}.ts layouts/partials/content/svg/${{ github.event.inputs.icon_name }}.html
 
       - name: Create branch, commit, and push
