@@ -1,6 +1,6 @@
 ---
 title: "🙋‍♂️ About Me"
-date: 2024-03-28T15:00:00+00:00
+date: 2025-03-23
 draft: false
 layout: "terms"
 description: "About - {{ .Site.Title }}"
@@ -8,7 +8,7 @@ url: "/about.html"
 ---
 
 ## Hello, I'm Patrick 👋
-I’m a dedicated and curious DevOps engineer and software developer with a deep passion for technology, mathematics, and hardware design. My journey into tech began when I got my first computer (a Tandy 286 running MS-DOS) in the early 90s and quickly became captivated by the possibilities hidden behind the command line. In the early 2000s, as a middle school student, I discovered Linux through Slackware, using it to breathe new life into aging hardware. Before high school, I was diving into networking, setting up LAN parties, and fixing computers for friends and family, always eager to explore how systems worked and how to make them work better.
+I’m a dedicated and curious DevOps engineer and software developer with a deep passion for technology, mathematics, and systems design. My journey into tech began when I got my first computer (a Tandy 286 running MS-DOS) in the early 90s and quickly became captivated by the possibilities hidden behind the command line. In the early 2000s, as a middle school student, I discovered Linux through Slackware, using it to breathe new life into aging hardware. Before high school, I was diving into networking, setting up LAN parties, and fixing computers for friends and family, always eager to explore how systems worked and how to make them work better.
 
 While technology was my first love, my early 20s led me down a different but equally enriching path. I pursued my interests in art, music, and poetry, performing in the Boston area while working in restaurants and studying for an associate degree in Electrical Engineering Science. This eventually culminated in me managing a small jazz café, where I took on the roles of equal parts bartender, barista, tapas chef, musical performer and master of ceremonies - a chaotic but rewarding experience that sharpened my ability to adapt, problem-solve, and lead in dynamic environments.
 
@@ -32,12 +32,12 @@ I thrive on continuous learning, always pushing my boundaries to stay ahead of e
 
 Clean code, effective automation, and thoughtful system architecture form the foundation of my work. I believe that great engineering isn’t just about making things work—it’s about making them work reliably, efficiently, and with minimal friction. I’m a firm advocate for clear documentation, because knowledge-sharing and maintainability are just as crucial as the code itself.
 
-What truly drives me is the elegance of simplicity—breaking down complex problems into clear, understandable, and repeatable solutions. Whether it’s debugging a stubborn issue, streamlining workflows, or designing robust cloud infrastructure, I approach every challenge with a strategic mindset, ensuring that solutions are not just functional but also sustainable and adaptable for the future.
+What truly drives me is the elegance of simplicity, breaking down complex problems into clear, understandable, and repeatable solutions. Whether it’s debugging a stubborn issue, streamlining workflows, or designing robust cloud infrastructure, I approach every challenge with a strategic mindset, ensuring that solutions are not just functional but also sustainable and adaptable for the future.
 
-Ultimately, I see technology as a force multiplier—one that, when harnessed thoughtfully, empowers teams, optimizes efficiency, and paves the way for innovation at scale. 🚀
+Ultimately, I see technology as a force multiplier that, when harnessed thoughtfully, empowers teams, optimizes efficiency, and paves the way for innovation at scale. 🚀
 
 ## My Projects
-Throughout my career, I have led the charge in modernizing legacy systems—transitioning critical services from brittle, outdated setups to scalable, automated, and cloud-native architectures. I specialize in revitalizing legacy codebases, leveraging my deep understanding of Linux internals and system architecture—a skillset shaped by my early experiences with Slackware and breathing new life into aging hardware. This foundation has made me particularly adept at navigating, troubleshooting, and optimizing older codebases, identifying bottlenecks, and gradually evolving them toward modern DevOps best practices.
+Throughout my career, I have led the charge in modernizing legacy systems, transitioning critical services from brittle, outdated setups to scalable, automated, and cloud-native architectures. I specialize in revitalizing legacy codebases, leveraging my deep understanding of Linux internals and system architecture—a skillset shaped by my early experiences with Slackware and breathing new life into aging hardware. This foundation has made me particularly adept at navigating, troubleshooting, and optimizing older codebases, identifying bottlenecks, and gradually evolving them toward modern DevOps best practices.
 
 I’ve successfully executed large-scale migrations, including:
 
@@ -49,7 +49,7 @@ Developing Terraform modules to create robust, reusable Azure infrastructure, en
 
 Implementing GitOps workflows with Flux, bringing declarative infrastructure and application management to teams embracing continuous delivery.
 
-What sets me apart is my ability to jump into complex, unfamiliar legacy systems—understanding their intricacies, improving them incrementally, and guiding organizations through a structured migration. Whether it’s refactoring ancient shell scripts, debugging deeply embedded C++ code, or containerizing legacy services, I excel at bridging the gap between old and new. My goal is always to leave things better than I found them—building sustainable, forward-thinking solutions that empower teams and drive long-term efficiency.
+What sets me apart is my ability to jump into complex, unfamiliar legacy systems, understanding their intricacies, improving them incrementally, and guiding organizations through a structured migration. Whether it’s refactoring ancient shell scripts, debugging deeply embedded C++ code, or containerizing legacy services, I excel at bridging the gap between old and new. My goal is always to leave things better than I found them, building sustainable, forward-thinking solutions that empower teams and drive long-term efficiency.
 
 ## My Goals
 Looking ahead, I'm deeply interested in quantum computing, embedded systems, and advanced hardware projects, particularly focusing on how these areas intersect with DevOps, cloud infrastructure, and machine learning. My goal is to deepen my understanding and expertise in integrating these technologies, continually broadening my skill set to build robust, efficient, and innovative solutions that bridge traditional DevOps practices with emerging hardware and software paradigms.
