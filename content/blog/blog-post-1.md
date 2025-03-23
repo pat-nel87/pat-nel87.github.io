@@ -45,6 +45,10 @@ Then, I customized the `hugo.yaml` to fine-tune the appearance.
 
 One of the benefits of Hugo is its flexibility. I leveraged Hugo’s powerful templating system:
 
+- Added custom shortcodes for SVG icons:
+
+{{< svg logo="go" >}}
+
 - Highlighted code snippets clearly:
 
 ```go
