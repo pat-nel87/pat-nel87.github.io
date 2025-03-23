@@ -30,7 +30,7 @@ jobs:
           mkdir -p svg-files
           curl -L -o svg-files/${{ github.event.inputs.icon_name }}.ts ${{ github.event.inputs.svg_url }}
           ls
-          ls svg-files
+          cat svg-files/${{ github.event.inputs.icon_name }}.ts
           
       - name: Convert SVG to HTML
         run: |

@@ -47,8 +47,6 @@ func readFile(filename string) (string, error) {
 }
 
 // extractSVGPaths extracts SVG path data from CoreUI TypeScript file.
-// extractSVGPaths extracts SVG path data from CoreUI TypeScript file.
-// extractSVGPaths extracts SVG path data from CoreUI TypeScript file.
 func extractSVGPaths(content string) ([]string, error) {
 	// Step 1: Capture the SVG string within double quotes after the size definition
 	re := regexp.MustCompile(`(?s)"(?:\d+\s\d+)?","(.*?)"`)
