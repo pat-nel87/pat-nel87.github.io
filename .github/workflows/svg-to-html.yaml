@@ -51,12 +51,3 @@ jobs:
           git commit -m "Add SVG partial for ${{ github.event.inputs.icon_name }}"
           git push origin $branch_name
 
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Add SVG partial: ${{ github.event.inputs.icon_name }}"
-          branch: "add-svg-${{ github.event.inputs.icon_name }}"
-          base: "main"
-          body: |
-            Automated SVG-to-HTML conversion for **${{ github.event.inputs.icon_name }}**.
