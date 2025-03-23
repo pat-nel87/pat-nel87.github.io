@@ -47,7 +47,7 @@ One of the benefits of Hugo is its flexibility. I leveraged Hugo’s powerful te
 
 - Added custom shortcodes for SVG icons:
 
-{{< svg logo="go" >}}
+{{< svg logo="go" text="Powered by Go" styling="inline-block">}}
 
 - Highlighted code snippets clearly:
 
