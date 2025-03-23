@@ -13,10 +13,10 @@ menus:
       name: Blog
       url: /blog
       weight: 30
-#    - identifier: tags
-#      name: Tags
-#      url: /tags
-#      weight: 40
+    - identifier: resume
+      name: Resume
+      url: /resume
+      weight: 40
 permalinks:
   blog: "/blog/:year/:month/:day/:title/"
 taxonomies:
