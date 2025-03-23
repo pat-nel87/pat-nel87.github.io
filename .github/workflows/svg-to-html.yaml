@@ -12,7 +12,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  
+
 jobs:
   convert-and-pr:
     runs-on: ubuntu-latest
@@ -55,5 +55,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "Add SVG partial: ${{ github.event.inputs.icon_name }}"
           branch: "add-svg-${{ github.event.inputs.icon_name }}"
+          base: "main"
           body: |
             Automated SVG-to-HTML conversion for **${{ github.event.inputs.icon_name }}**.
