@@ -39,6 +39,7 @@ jobs:
         run: |
           go run scripts/svg-to-html.go ${{ github.workspace }}/svg-files/${{ github.event.inputs.icon_name }}.ts ${{ github.workspace }}/layouts/partials/content/svg/${{ github.event.inputs.icon_name }}.html
           cat ${{ github.workspace }}/layouts/partials/content/svg/${{ github.event.inputs.icon_name }}.html
+          rm -rf svg-files/${{ github.event.inputs.icon_name }}.ts
 
       - name: Create branch, commit, and push
         run: |
