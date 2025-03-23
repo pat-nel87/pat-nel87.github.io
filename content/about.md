@@ -26,7 +26,7 @@ Beyond cloud and automation, I’m also comfortable working with embedded platfo
 This ability to work across both high-level cloud environments and low-level embedded platforms gives me a unique perspective—allowing me to bridge the gap between infrastructure, automation, and system design. Whether I’m deploying scalable cloud workloads or optimizing firmware for resource-constrained environments, I apply the same core principles: efficiency, reliability, and maintainability.
 
 ## My Approach
-At the core of my work is a deep commitment to problem-solving—not just fixing what’s broken, but understanding the root cause, refining processes, and architecting solutions that stand the test of time. I approach challenges with a blend of pragmatism and curiosity, ensuring that every problem I tackle is an opportunity to improve systems, automate inefficiencies, and create scalable, resilient solutions.
+At the core of my work is a deep commitment to problem solving not just fixing what’s broken, but understanding the root cause, refining processes, and architecting solutions that stand the test of time. I approach challenges with a blend of pragmatism and curiosity, ensuring that every problem I tackle is an opportunity to improve systems, automate inefficiencies, and create scalable, resilient solutions.
 
 I thrive on continuous learning, always pushing my boundaries to stay ahead of emerging technologies. Whether it’s infrastructure as code, Kubernetes orchestration, or optimizing CI/CD pipelines, I take a hands-on approach—experimenting, iterating, and refining until I find the most effective solution.
 

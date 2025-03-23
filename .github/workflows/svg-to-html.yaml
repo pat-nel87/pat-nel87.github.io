@@ -1,0 +1,80 @@
+name: SVG to HTML PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      svg_url:
+        description: 'URL to CoreUI SVG file (.ts)'
+        required: true
+      icon_name:
+        description: 'Icon name (used for HTML filename)'
+        required: true
+
+jobs:
+  convert-and-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Download SVG file
+        run: |
+          mkdir -p svg-files
+          curl -L -o svg-files/${{ github.event.inputs.icon_name }}.ts ${{ github.event.inputs.svg_url }}
+
+      - name: Create Go converter script
+        run: |
+          cat << EOF > svg-to-html.go
+          package main
+          import (
+            "fmt"
+            "os"
+            "regexp"
+            "strings"
+          )
+          func main() {
+            data, _ := os.ReadFile(os.Args[1])
+            re := regexp.MustCompile(\`<path[^>]*d='([^']*)'/?>\`)
+            matches := re.FindAllString(string(data), -1)
+            if len(matches) == 0 {
+              fmt.Println("No SVG paths found.")
+              os.Exit(1)
+            }
+            svg := "<svg xmlns=\\"http://www.w3.org/2000/svg\\" viewBox=\\"0 0 32 32\\">\\n"
+            svg += strings.Join(matches, "\\n")
+            svg += "\\n</svg>"
+            os.WriteFile(os.Args[2], []byte(svg), 0644)
+          }
+          EOF
+
+      - name: Convert SVG to HTML
+        run: |
+          mkdir -p layouts/partials/content/svg
+          go run svg-to-html.go svg-files/${{ github.event.inputs.icon_name }}.ts layouts/partials/content/svg/${{ github.event.inputs.icon_name }}.html
+
+      - name: Create branch, commit, and push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          branch_name=add-svg-${{ github.event.inputs.icon_name }}
+          git checkout -b $branch_name
+          git add layouts/partials/content/svg/${{ github.event.inputs.icon_name }}.html
+          git commit -m "Add SVG partial for ${{ github.event.inputs.icon_name }}"
+          git push origin $branch_name
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Add SVG partial: ${{ github.event.inputs.icon_name }}"
+          branch: "add-svg-${{ github.event.inputs.icon_name }}"
+          body: |
+            Automated SVG-to-HTML conversion for **${{ github.event.inputs.icon_name }}**.
