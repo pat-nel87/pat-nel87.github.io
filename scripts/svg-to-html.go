@@ -48,25 +48,28 @@ func readFile(filename string) (string, error) {
 
 // extractSVGPaths extracts SVG path data from CoreUI TypeScript file.
 // extractSVGPaths extracts SVG path data from CoreUI TypeScript file.
+// extractSVGPaths extracts SVG path data from CoreUI TypeScript file.
 func extractSVGPaths(content string) ([]string, error) {
-	re := regexp.MustCompile(`"([^"]*<path.*?>)"`)
-	matches := re.FindAllStringSubmatch(content, -1)
+	// Step 1: Capture the SVG string within double quotes after the size definition
+	re := regexp.MustCompile(`(?s)"(?:\d+\s\d+)?","(.*?)"`)
+	mainMatch := re.FindStringSubmatch(content)
+	if len(mainMatch) < 2 {
+		return nil, fmt.Errorf("no SVG data found in input file")
+	}
 
-	if len(matches) == 0 {
-		return nil, fmt.Errorf("no SVG paths found in input file")
+	svgContent := mainMatch[1]
+
+	// Step 2: Extract individual path elements from the captured SVG content
+	pathRe := regexp.MustCompile(`<path\s+d=['"]([^'"]+)['"].*?/?\s*>`)
+	pathMatches := pathRe.FindAllStringSubmatch(svgContent, -1)
+
+	if len(pathMatches) == 0 {
+		return nil, fmt.Errorf("no SVG paths found in extracted SVG content")
 	}
 
 	var paths []string
-	pathRe := regexp.MustCompile(`<path d=['"]([^'"]+)['"].*?/?>`)
-	for _, match := range matches {
-		pathMatches := pathRe.FindAllStringSubmatch(match[1], -1)
-		for _, pmatch := range pathMatches {
-			paths = append(paths, pmatch[1])
-		}
-	}
-
-	if len(paths) == 0 {
-		return nil, fmt.Errorf("no valid SVG path 'd' attributes found")
+	for _, pmatch := range pathMatches {
+		paths = append(paths, pmatch[1])
 	}
 
 	return paths, nil
