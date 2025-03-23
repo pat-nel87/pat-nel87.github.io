@@ -6,7 +6,7 @@ params:
   slug: "markdown-template"
 layout: "post"
 tags: ["markdown","template", "demo", "example", "another tag"]
-authors: ["Nayan Seth", "John Doe", "Author 3", "Author 4", "Author 5"]
+authors: ["Patrick Nelson Seth", "John Doe", "Author 3", "Author 4", "Author 5"]
 ---
 
 ## SVG Testing

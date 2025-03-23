@@ -6,7 +6,7 @@ params:
   slug: "this-is-a-very-big-post-title-to-test-the-css-of-this-theme"
 layout: "post"
 tags: ["css", "testing"]
-authors: ["Nayan Seth"]
+authors: ["Patrick Nelson Seth"]
 ---
 
 Hello World!

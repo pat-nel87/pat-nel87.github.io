@@ -6,6 +6,6 @@ params:
   slug: "feb-post-1"
 layout: "post"
 tags: ["pagination", "testing"]
-authors: ["Nayan Seth"]
+authors: ["Patrick Nelson"]
 ---
 
