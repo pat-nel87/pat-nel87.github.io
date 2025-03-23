@@ -16,7 +16,7 @@ Coming full-circle, my path led me back to technology when I joined Custom Autom
 
 Determined to push further, I returned to school for Computer Science during the COVID era, focusing on cloud infrastructure, automation, and software development. This led me to Johnson Controls, where I started as a software development intern and worked my way up to Senior DevOps Engineer, delivering solutions at a global scale.
 
-As I continue to evolve in my career, I remain deeply excited about the future of technology, automation, and distributed systems. I’m passionate about not just keeping up with technological advances but taking an active role in shaping the future—building innovative solutions that optimize infrastructure, scale globally, and empower the next generation of engineers.
+As I continue to evolve in my career, I remain deeply excited about the future of technology, automation, and distributed systems. I’m passionate about not just keeping up with technological advances but taking an active role in shaping the future, building innovative solutions that optimize infrastructure, scale globally, and empower the next generation of engineers.
 
 ## My Expertise
 I specialize in DevOps engineering philosophy, cloud infrastructure, and automation, primarily within the Azure ecosystem. My toolkit includes Terraform for infrastructure-as-code, a preference for GitHub Actions for CI/CD pipelines, Kubernetes for container orchestration, and Flux for GitOps workflows. I’m also proficient in Go, Python, and Bash scripting, which enables me to automate and streamline complex processes efficiently.
@@ -62,7 +62,7 @@ Cryptography – Deepening my understanding of encryption, security protocols, a
 
 Open Source Contributions – Giving back to the community by contributing to open-source projects, sharing knowledge, and collaborating with other developers.
 
-Beyond technology, I enjoy tinkering with low-level systems, experimenting with automation, and learning about new architectural patterns that push the boundaries of what’s possible. I’m always looking for opportunities to apply my skills in meaningful ways, solve interesting problems, and help shape the future of software and infrastructure.
+ I enjoy tinkering with low-level systems, experimenting with automation, and learning about new architectural patterns that push the boundaries of what’s possible. I’m always looking for opportunities to apply my skills in meaningful ways, solve interesting problems, and help shape the future of software and infrastructure.
 
 ## Let's Connect
 I'm always eager to collaborate, exchange ideas, or discuss exciting technology trends. Whether you're seeking insights into DevOps and cloud infrastructure or exploring innovative tech projects, feel free to get in touch—I'm looking forward to our conversation!
