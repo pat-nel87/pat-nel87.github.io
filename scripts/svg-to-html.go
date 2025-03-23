@@ -47,8 +47,9 @@ func readFile(filename string) (string, error) {
 }
 
 // extractSVGPaths extracts SVG path data from CoreUI TypeScript file.
+// extractSVGPaths extracts SVG path data from CoreUI TypeScript file.
 func extractSVGPaths(content string) ([]string, error) {
-	re := regexp.MustCompile(`"<path d='([^']+)'/?>(</path>)?"`)
+	re := regexp.MustCompile(`"([^"]*<path.*?>)"`)
 	matches := re.FindAllStringSubmatch(content, -1)
 
 	if len(matches) == 0 {
@@ -56,9 +57,18 @@ func extractSVGPaths(content string) ([]string, error) {
 	}
 
 	var paths []string
+	pathRe := regexp.MustCompile(`<path d=['"]([^'"]+)['"].*?/?>`)
 	for _, match := range matches {
-		paths = append(paths, match[1])
+		pathMatches := pathRe.FindAllStringSubmatch(match[1], -1)
+		for _, pmatch := range pathMatches {
+			paths = append(paths, pmatch[1])
+		}
 	}
+
+	if len(paths) == 0 {
+		return nil, fmt.Errorf("no valid SVG path 'd' attributes found")
+	}
+
 	return paths, nil
 }
 
