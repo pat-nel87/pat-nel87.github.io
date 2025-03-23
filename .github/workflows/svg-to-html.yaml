@@ -29,6 +29,8 @@ jobs:
         run: |
           mkdir -p svg-files
           curl -L -o svg-files/${{ github.event.inputs.icon_name }}.ts ${{ github.event.inputs.svg_url }}
+          ls
+          ls svg-files
 
       - name: Create Go converter script
         run: |
@@ -57,7 +59,7 @@ jobs:
 
       - name: Convert SVG to HTML
         run: |
-          go run svg-to-html.go svg-files/${{ github.event.inputs.icon_name }}.ts layouts/partials/content/svg/${{ github.event.inputs.icon_name }}.html
+          go run svg-to-html.go ${{ github.workspace }}/svg-files/${{ github.event.inputs.icon_name }}.ts ${{ github.workspace }}/layouts/partials/content/svg/${{ github.event.inputs.icon_name }}.html
 
       - name: Create branch, commit, and push
         run: |
