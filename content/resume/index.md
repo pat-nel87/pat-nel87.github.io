@@ -30,7 +30,6 @@ cloud_platforms:
   - ☁️ Azure
 infrastructure_as_code:
   - 🏗️ Terraform
-  - 📜 ARM Templates
 ci_cd_tools:
   - ⚙️ GitHub Actions
   - 🚀 Azure DevOps
