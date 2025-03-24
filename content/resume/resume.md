@@ -1,7 +1,8 @@
 ---
 title: "Resume"
-date: 2023-10-01
+date: 2025-03-23
 layout: "resume"
+draft: false
 ---
 
 # My Resume
