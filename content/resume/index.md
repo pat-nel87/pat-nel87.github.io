@@ -5,3 +5,7 @@ layout: terms
 url: "/resume.html"
 draft: false
 ---
+
+# My Resume
+
+Welcome to my resume page. Add your resume content here.
