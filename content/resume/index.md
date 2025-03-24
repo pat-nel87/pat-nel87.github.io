@@ -54,7 +54,7 @@ firmware_development:
 ```
 
 ## 🚀 **Experience**
-### **Senior DevOps Engineer** - _Johnson Controls, Remote_  
+### **Senior DevOps Engineer** - _Johnson Controls, Westford Ma_  
 📅 _Aug 2024 – Present_
 ```python
 responsibilities = [
@@ -68,7 +68,7 @@ responsibilities = [
 
 ---
 
-### **DevOps Engineer** - _Johnson Controls, Remote_  
+### **DevOps Engineer** - _Johnson Controls, Westford Ma_  
 📅 _Oct 2021 – Aug 2024_
 ```python
 responsibilities = [
