@@ -87,7 +87,7 @@ responsibilities = [
 degree: "🎓 Bachelor of Science in Computer Science (In Progress)"
 institution: "🏫 Arizona State University"
 credits: 90
-gpa: 3.8
+gpa: 3.86
 ```
 
 ## 🎖 **Certifications**
