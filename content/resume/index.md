@@ -66,7 +66,8 @@ responsibilities = [
     "🤖 Automated infrastructure deployments with Terraform, reducing provisioning time.",
     "⚙️ Developed and maintained CI/CD pipelines in GitHub Actions, creating reusable workflows.",
     "🛠️ Collaborated with cross-functional teams to troubleshoot and resolve critical system issues.",
-    "🌊 Implemented GitOps with FluxCD for managing Kubernetes configurations, ensuring declarative infrastructure and automated updates."
+    "🌊 Implemented GitOps with FluxCD for managing Kubernetes configurations, 
+        ensuring declarative infrastructure and automated updates."
     ]
 ```
 
