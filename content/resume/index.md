@@ -65,8 +65,7 @@ responsibilities = [
     "🤖 Automated infrastructure deployments with Terraform, reducing provisioning time.",
     "⚙️ Developed and maintained CI/CD pipelines in GitHub Actions, creating reusable workflows.",
     "🛠️ Collaborated with cross-functional teams to troubleshoot and resolve critical system issues.",
-    "🌊 Implemented GitOps with FluxCD for managing Kubernetes configurations, 
-        ensuring declarative infrastructure and automated updates."
+    "🌊 Implemented GitOps with FluxCD for managing Kubernetes configurations. "
     ]
 ```
 
@@ -106,12 +105,11 @@ certifications:
 learning_more_about:
   - 🏎️ Go 
   - 🌊 FluxCD
-  - ☁️ Advanced Kubernetes
   - 🔐 Zero Trust Security
   - 🌐 Azure Cloud DNS & Networking
 ```
 
 ---
 
-🖥 **Last Updated:** `date +%Y-%m-%d`
+🖥 **Last Updated:** `2025-03-23`
 
