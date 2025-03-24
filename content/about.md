@@ -16,10 +16,10 @@ Coming full-circle, my path led me back to technology when I joined Custom Autom
 
 Determined to push further, I returned to school for Computer Science during the COVID era, focusing on cloud infrastructure, automation, and software development. This led me to Johnson Controls, where I started as a software development intern and worked my way up to Senior DevOps Engineer, delivering solutions at a global scale.
 
-As I continue to evolve in my career, I remain deeply excited about the future of technology, automation, and distributed systems. I’m passionate about not just keeping up with technological advances but taking an active role in shaping the future.
+As I continue to evolve in my career, I remain deeply excited about the future of technology, automation, and distributed systems. I’m passionate about taking an active role in shaping the future.
 
 ## My Expertise
-I specialize in DevOps engineering philosophy, cloud infrastructure, and automation, primarily within the Azure ecosystem. My toolkit includes Terraform for infrastructure-as-code, a preference for GitHub Actions for CI/CD pipelines, Kubernetes for container orchestration, and FluxCD for GitOps workflows. I’m also proficient in Go, Python, Powershell and Bash scripting.
+I specialize in DevOps engineering philosophy, cloud infrastructure, and automation, primarily within the Azure ecosystem. My toolkit includes Terraform for infrastructure-as-code, a preference for GitHub Actions for CI/CD pipelines, Kubernetes for container orchestration, and FluxCD for GitOps workflows. I’m also proficient in Go, Python, Powershell and Bash.
 
 Beyond cloud and automation, I’m also comfortable working with embedded platforms and low-level system architecture. I have experience with Yocto for building custom Linux distributions for embedded systems. My background in hardware, computer science, and system internals gives me a solid understanding of how software and infrastructure interact at a deeper level, allowing me to optimize performance, troubleshoot intricate issues, and build systems that integrate both hardware and software seamlessly.
 
