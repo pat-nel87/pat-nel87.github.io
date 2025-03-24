@@ -37,7 +37,7 @@ What truly drives me is the elegance of simplicity, breaking down complex proble
 Ultimately, I see technology as a force multiplier that, when harnessed thoughtfully, empowers teams, optimizes efficiency, and paves the way for innovation at scale. 🚀
 
 ## My Projects
-Throughout my career, I have led the charge in modernizing legacy systems, transitioning critical services from brittle, outdated setups to scalable, automated, and cloud-native architectures. I specialize in revitalizing legacy codebases, leveraging my deep understanding of Linux internals and system architecture—a skillset shaped by my early experiences with Slackware and breathing new life into aging hardware. This foundation has made me particularly adept at navigating, troubleshooting, and optimizing older codebases, identifying bottlenecks, and gradually evolving them toward modern DevOps best practices.
+Throughout my career, I have led the charge in modernizing legacy systems, transitioning critical services from brittle, outdated setups to scalable, automated, and cloud-native architectures. I specialize in revitalizing legacy codebases, leveraging my deep understanding of Linux internals and system architecture. My early experiences with linux has made me particularly adept at navigating, troubleshooting, and optimizing older codebases, identifying bottlenecks, and gradually evolving them toward modern DevOps best practices.
 
 I’ve successfully executed large-scale migrations, including:
 
@@ -49,7 +49,9 @@ I’ve successfully executed large-scale migrations, including:
 
 - **Implementing GitOps workflows** with Flux, bringing declarative infrastructure and application management to teams embracing continuous delivery.
 
-What sets me apart is my ability to jump into complex, unfamiliar legacy systems, understanding their intricacies, improving them incrementally, and guiding organizations through a structured migration. Whether it’s refactoring ancient shell scripts, debugging deeply embedded C++ code, or containerizing legacy services, I excel at bridging the gap between old and new. My goal is always to leave things better than I found them, building sustainable, forward-thinking solutions that empower teams and drive long-term efficiency.
+What sets me apart is my ability to jump into complex, unfamiliar legacy systems, understanding their intricacies, improving them incrementally, and guiding organizations through a structured migration. 
+
+Whether it’s refactoring ancient shell scripts, debugging deeply embedded C++ code, or containerizing legacy services, I excel at bridging the gap between old and new. My goal is always to leave things better than I found them, building sustainable, forward-thinking solutions that empower teams and drive long-term efficiency.
 
 ## My Goals
 Looking ahead, I'm deeply interested in quantum computing, embedded systems, and advanced hardware projects, particularly focusing on how these areas intersect with DevOps, cloud infrastructure, and machine learning. My goal is to deepen my understanding and expertise in integrating these technologies, continually broadening my skill set to build robust, efficient, and innovative solutions that bridge traditional DevOps practices with emerging hardware and software paradigms.
