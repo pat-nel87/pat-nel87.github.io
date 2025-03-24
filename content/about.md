@@ -12,16 +12,16 @@ I’m a dedicated and curious software engineer with a deep passion for technolo
 
 While technology was my first love, my early 20s led me down a different but equally enriching path. I pursued my interests in art, music, and poetry, performing in the Boston area while working in restaurants and studying for an associate degree in Electrical Engineering Science. This eventually culminated in an opportunity managing a small jazz café, where I took on the roles of equal parts bartender, barista, tapas chef, musical performer and master of ceremonies - a chaotic but rewarding experience that sharpened my ability to adapt, problem-solve, and lead in dynamic environments.
 
-Coming full-circle, my path led me back to technology when I joined Custom Automated Prosthetics (Zahn Dental / Henry Schein) as a CAD/CAM technician. This role opened the door to the tech industry as I transitioned into technical support and hardware repair when Henry Schein acquired the company, assisting dental labs across the U.S. It was here that my love of programming was reignited as I began developing PowerShell scripts to automate key workflows, making my work more efficient and driving real impact.
+Coming full-circle, my path led me back to technology when I joined Custom Automated Prosthetics (Zahn Dental / Henry Schein) as a CAD/CAM technician. This role opened the door to the tech industry as I worked my way into technical support and hardware repair for dental lab customers across the U.S. It was here that my love of programming was reignited as I began developing PowerShell scripts to automate key workflows, making my work more efficient and driving real impact.
 
 Determined to push further, I returned to school for Computer Science during the COVID era, focusing on cloud infrastructure, automation, and software development. This led me to Johnson Controls, where I started as a software development intern and worked my way up to Senior DevOps Engineer, delivering solutions at a global scale.
 
-As I continue to evolve in my career, I remain deeply excited about the future of technology, automation, and distributed systems. I’m passionate about not just keeping up with technological advances but taking an active role in shaping the future, building innovative solutions that optimize infrastructure, scale globally, and empower the next generation of engineers.
+As I continue to evolve in my career, I remain deeply excited about the future of technology, automation, and distributed systems. I’m passionate about not just keeping up with technological advances but taking an active role in shaping the future.
 
 ## My Expertise
-I specialize in DevOps engineering philosophy, cloud infrastructure, and automation, primarily within the Azure ecosystem. My toolkit includes Terraform for infrastructure-as-code, a preference for GitHub Actions for CI/CD pipelines, Kubernetes for container orchestration, and Flux for GitOps workflows. I’m also proficient in Go, Python, and Bash scripting, which enables me to automate and streamline complex processes efficiently.
+I specialize in DevOps engineering philosophy, cloud infrastructure, and automation, primarily within the Azure ecosystem. My toolkit includes Terraform for infrastructure-as-code, a preference for GitHub Actions for CI/CD pipelines, Kubernetes for container orchestration, and FluxCD for GitOps workflows. I’m also proficient in Go, Python, Powershell and Bash scripting.
 
-Beyond cloud and automation, I’m also comfortable working with embedded platforms and low-level system architecture. I have experience with Yocto for building custom Linux distributions and working with C/C++ for embedded systems and performance-critical applications. My background in hardware, computer science, and system internals gives me a solid understanding of how software and infrastructure interact at a deeper level, allowing me to optimize performance, troubleshoot intricate issues, and build systems that integrate both hardware and software seamlessly.
+Beyond cloud and automation, I’m also comfortable working with embedded platforms and low-level system architecture. I have experience with Yocto for building custom Linux distributions for embedded systems. My background in hardware, computer science, and system internals gives me a solid understanding of how software and infrastructure interact at a deeper level, allowing me to optimize performance, troubleshoot intricate issues, and build systems that integrate both hardware and software seamlessly.
 
 This ability to work across both high-level cloud environments and low-level embedded platforms gives me a unique perspective—allowing me to bridge the gap between infrastructure, automation, and system design. Whether I’m deploying scalable cloud workloads or optimizing firmware for resource-constrained environments, I apply the same core principles: efficiency, reliability, and maintainability.
 
@@ -41,13 +41,13 @@ Throughout my career, I have led the charge in modernizing legacy systems, trans
 
 I’ve successfully executed large-scale migrations, including:
 
-Replatforming legacy monolithic applications onto Kubernetes-based deployments, improving scalability, reliability, and maintainability.
+- **Replatforming legacy monolithic applications** onto Kubernetes-based deployments, improving scalability, reliability, and maintainability.
 
-Modernizing CI/CD pipelines by replacing manual or ad-hoc deployment processes with automated, repeatable workflows using GitHub Actions.
+- **Modernizing CI/CD pipelines** by replacing manual or ad-hoc deployment processes with automated, repeatable workflows using GitHub Actions.
 
-Developing Terraform modules to create robust, reusable Azure infrastructure, ensuring environments are consistent, secure, and scalable.
+- **Developing Infrastructure as Code** to create robust, reusable Cloud infrastructure, to replace legacy on premise systems.
 
-Implementing GitOps workflows with Flux, bringing declarative infrastructure and application management to teams embracing continuous delivery.
+- **Implementing GitOps workflows** with Flux, bringing declarative infrastructure and application management to teams embracing continuous delivery.
 
 What sets me apart is my ability to jump into complex, unfamiliar legacy systems, understanding their intricacies, improving them incrementally, and guiding organizations through a structured migration. Whether it’s refactoring ancient shell scripts, debugging deeply embedded C++ code, or containerizing legacy services, I excel at bridging the gap between old and new. My goal is always to leave things better than I found them, building sustainable, forward-thinking solutions that empower teams and drive long-term efficiency.
 
