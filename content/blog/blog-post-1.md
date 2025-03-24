@@ -1,7 +1,7 @@
 ---
 title: 'Building My Portfolio with Hugo and Go'
 date: 2025-03-22T10:00:00+00:00
-draft: true
+draft: false
 params:
   slug: building-hugo-portfolio
 layout: "post"
@@ -231,7 +231,7 @@ Welcome to my blog. Next post: something other than a blog about a blog… 😆
 
 ## Let's Connect! 🌐
 
-I'm always excited to discuss Hugo, DevOps, or technology in general. Reach out via contacts on my resume page [resume page](/resume), and let’s connect!
+I'm always excited to discuss Go, DevOps, or technology in general. Reach out via contacts on my resume page [resume page](/resume), and let’s connect!
 
 Happy coding! 🎉
 
