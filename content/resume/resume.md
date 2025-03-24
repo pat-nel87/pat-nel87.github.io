@@ -1,7 +1,7 @@
 ---
 title: "Resume"
 date: 2025-03-23
-layout: "resume"
+layout: "terms"
 draft: false
 ---
 
