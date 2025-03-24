@@ -4,7 +4,7 @@ date: 2025-03-22
 draft: false
 slug: "resume"
 layout: "single"
-tags: ["resume", "devops", "terraform", "azure", "github-actions"]
+tags: ["resume", "devops", "terraform", "azure", "github-actions", "flux"]
 authors: ["Patrick Nelson"]
 ---
 
@@ -32,6 +32,7 @@ ci_cd_tools:
   - ⚙️ GitHub Actions
   - 🚀 Azure DevOps
   - 🔁 Jenkins
+  - 🌊 FluxCD
 programming_languages:
   - 🐍 Python
   - 🐚 Bash
@@ -62,8 +63,8 @@ responsibilities = [
     "🤖 Automated infrastructure deployments with Terraform, reducing provisioning time.",
     "⚙️ Developed and maintained CI/CD pipelines in GitHub Actions, creating reusable workflows.",
     "🛠️ Collaborated with cross-functional teams to troubleshoot and resolve critical system issues.",
-    "📊 Enhanced system monitoring and alerting with Azure Monitor and Log Analytics."
-]
+    "🌊 Implemented GitOps with FluxCD for managing Kubernetes configurations, ensuring declarative infrastructure and automated updates."
+    ]
 ```
 
 ---
@@ -94,6 +95,17 @@ gpa: 3.86
 ```yaml
 certifications:
   - "📜 Microsoft Certified: Azure Fundamentals"
+```
+
+📈 Currently Leveling Up
+
+```yaml
+learning_more_about:
+  - 🏎️ Go 
+  - 🌊 FluxCD
+  - ☁️ Advanced Kubernetes
+  - 🔐 Zero Trust Security
+  - 🌐 Azure Cloud DNS & Networking
 ```
 
 ---
