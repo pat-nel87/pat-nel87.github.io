@@ -17,7 +17,10 @@ authors: ["Patrick Nelson"]
     "linkedin": "https://www.linkedin.com/in/patrick-nelson-1b41561b6/",
     "phone": "+1 (781) 715-3201"
   },
-  "summary": "🐧 Linux-loving DevOps Engineer with a knack for automation, site reliability, and optimizing workflows. Proficient in Terraform, GitHub Actions, and Azure, driving operational excellence through efficient CI/CD and infrastructure as code."
+  "summary": "🐧 Linux-loving DevOps Engineer with a knack for automation,
+   site reliability, and optimizing workflows.
+   Proficient in Terraform, GitHub Actions, FluxCD and Azure,
+   driving operational excellence through efficient CI/CD and infrastructure as code."
 }
 ```
 
