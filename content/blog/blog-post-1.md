@@ -54,7 +54,7 @@ Need something that looks like it belongs in a cyberpunk movie? There’s a them
 Want your site to look like a 1999 Geocities page? Well… you could do that, but let’s not.
 
 #### The Hugo Theme Hunt: A Developer's Paradox 🔄
-Picking a theme should be simple, right? Wrong. This is the ultimate developer dilemma—spend actual time writing blog posts,
+Picking a theme should be simple, right? Wrong. This is the ultimate developer dilemma.. Spend actual time writing blog posts,
 or endlessly tweak the theme until it’s perfect? (Spoiler: It’s never perfect.)
 
 I started off browsing the official [Hugo theme gallery](https://themes.gohugo.io/).
