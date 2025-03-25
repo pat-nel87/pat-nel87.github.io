@@ -18,23 +18,17 @@ And when you build a blog, what’s the first thing you write about?
 Building the blog!
 So here I am, writing a blog about building a blog...
 I recently launched my personal site, powered by Hugo a blazing-fast static site generator written in Go.
-it’s simple, it’s efficient, and you can quickly generate an entire static site. 
+It’s simple, it’s efficient, and you can quickly generate an entire static site. 
 
 In this post, I’ll walk you through how I set everything up,
 from installing Hugo to picking a theme that didn’t make my site look like it was designed in 1998. 
-So if you’re thinking about starting your own blog stick around.
-Let’s break down how this all works, one recursive blog post at a time.
 
 ## Why Hugo and Go? 🚀
 
 I chose Hugo for the same reason I choose black coffee and CLI tools.. it’s fast, simple, and gets the job done.
 This thing is so fast, I could rebuild my entire site in the time it takes WordPress to load a settings page.
 
-But let’s be honest—the real reason I went with Hugo?
-
-{{< svg logo="go" text="Powered by Go" styling="inline-block">}}
-
-I’ve been looking for ways to dive deeper into Go, and what better way than by making my own blog?
+I’m always looking for ways to dive deeper into Go, and what better way than by making my own blog with a Go powered framework?
 Plus, as someone who lives and breathes DevOps, automation, and infrastructure-as-code,
 Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown, git, and lightning-fast builds 
 
@@ -43,10 +37,10 @@ Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown
 Getting started with Hugo is straightforward:
 
 ### Prerequisites**
-- You'll want to install [Go](https://go.dev/dl/)
-- You'll want to install [Hugo](https://gohugo.io/installation/)
-- Review Hugo's [Quick Start Guide](https://gohugo.io/getting-started/quick-start/)
-- Review [GitHub Pages Docs](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)
+- I installed [Go](https://go.dev/dl/)
+- I installed [Hugo](https://gohugo.io/installation/)
+- I reviewed Hugo's [Quick Start Guide](https://gohugo.io/getting-started/quick-start/)
+- I reviewed [GitHub Pages Docs](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)
 
 ## Getting Started:
 
@@ -59,12 +53,13 @@ To get started:
 - I then browsed [Hugo Themes](https://themes.gohugo.io/) to find a template for my page.
 
 #### Picking the Perfect Hugo Theme: So Many Choices, So Little Time 🎨
-One of the best things about using Hugo aside from its blazing-fast build times and my newfound obsession with Go, is the amazing selection of open-source themes.
-Seriously, there’s a theme for everything. Want a minimalist, typography-focused blog? There’s a theme for that. 
+One of the best things about using Hugo is the amazing selection of open-source themes.
+Seriously, there’s a theme for everything.
+Want a minimalist, typography-focused blog? There’s a theme for that. 
 Need something that looks like it belongs in a cyberpunk movie? There’s a theme for that too.
 Want your site to look like a 1999 Geocities page? Well… you could do that, but let’s not.
 
-##### The Hugo Theme Hunt: A Developer's Paradox 🔄
+#### The Hugo Theme Hunt: A Developer's Paradox 🔄
 Picking a theme should be simple, right? Wrong. This is the ultimate developer dilemma—spend actual time writing blog posts,
 or endlessly tweak the theme until it’s perfect? (Spoiler: It’s never perfect.)
 
@@ -77,10 +72,11 @@ Themes that had just the right amount of typography finesse to make me feel like
 And themes so minimalist that they were almost just a blank page. ("Simplicity!" the theme description proudly declared. "Where’s my content?" I asked.)
 
 **Customizing: Because We Can’t Leave Well Enough Alone 🛠️**
-Of course, I could have just picked a theme and been done with it. But where’s the fun in that? Instead, I:
-- ✅ Created some [custom tooling](https://github.com/pat-nel87/pat-nel87.github.io/blob/main/scripts/svg-to-html.go) to import custom svg from [CoreUI](https://github.com/coreui/coreui-icons) as html. (Also in Go 🚀😆) 
-- ✅ Configured this tool be driven via GitHub Actions Pipeline. See my pipeline [here](https://github.com/pat-nel87/pat-nel87.github.io/blob/main/.github/workflows/svg-to-html.yaml) 
-- ✅ Imported custom svg for use with my template, like this cool Go logo
+Of course, I could have just picked a theme and been done with it. But where’s the fun in that? 
+
+- ✅ I created some [custom tooling](https://github.com/pat-nel87/pat-nel87.github.io/blob/main/scripts/svg-to-html.go) to import custom svg from [CoreUI](https://github.com/coreui/coreui-icons) as html. (Also in Go 🚀😆) 
+- ✅ I configured this tool be driven via GitHub Actions Pipeline. See my pipeline [here](https://github.com/pat-nel87/pat-nel87.github.io/blob/main/.github/workflows/svg-to-html.yaml) 
+- ✅ I imported custom svg for use with my template to add the Go Logo as a shortcode. 
 
 {{< svg logo="go" text="Powered by Go" styling="inline-block">}}
 
