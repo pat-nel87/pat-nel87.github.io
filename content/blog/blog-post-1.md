@@ -1,5 +1,5 @@
 ---
-title: 'Building My Portfolio with Hugo and Go'
+title: 'A Blog about a blog'
 date: 2025-03-22T10:00:00+00:00
 draft: false
 params:
