@@ -14,11 +14,8 @@ authors: ["Patrick Nelson"]
 ## Introduction 👋
 
 As a Software Engineer, You can’t write a blog without first building a blog.
-And when you build a blog, what’s the first thing you write about?
-Building the blog!
 So here I am, writing a blog about building a blog...
 I recently launched my personal site, powered by Hugo a blazing-fast static site generator written in Go.
-It’s simple, it’s efficient, and you can quickly generate an entire static site. 
 
 In this post, I’ll walk you through how I set everything up,
 from installing Hugo to picking a theme that didn’t make my site look like it was designed in 1998. 
@@ -27,9 +24,6 @@ from installing Hugo to picking a theme that didn’t make my site look like it 
 
 I chose Hugo for the same reason I choose black coffee and CLI tools.. it’s fast, simple, and gets the job done.
 This thing is so fast, I could rebuild my entire site in the time it takes WordPress to load a settings page.
-
-I’m always looking for ways to dive deeper into Go, and what better way than by making my own blog with a Go powered framework?
-Plus, as someone who lives and breathes DevOps, automation, and infrastructure-as-code,
 Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown, git, and lightning-fast builds 
 
 ## Setting Up Hugo, Go, and Git 📦
@@ -63,7 +57,7 @@ Want your site to look like a 1999 Geocities page? Well… you could do that, bu
 Picking a theme should be simple, right? Wrong. This is the ultimate developer dilemma—spend actual time writing blog posts,
 or endlessly tweak the theme until it’s perfect? (Spoiler: It’s never perfect.)
 
-I started off browsing the official Hugo theme gallery, which is basically the GitHub of beautifully designed distractions.
+I started off browsing the official [Hugo theme gallery](https://themes.gohugo.io/).
 
 I found sleek, modern themes with dark mode (a necessity, obviously ☕).
 
@@ -124,15 +118,16 @@ With Cloudflare, I get:
 
 Setting it up was as simple as:
 
-Pointing my custom domain to Cloudflare.
+- Pointing my custom domain to Cloudflare.
 
-Adding DNS records to direct traffic to GitHub Pages.
+- Adding DNS records to direct traffic to GitHub Pages.
 
-Enabling HTTPS and feeling like a cybersecurity expert.
+- Enabling HTTPS and feeling like a cybersecurity expert.
 
 And just like that—boom! My blog is online, and secured.
 
 #### Setting Up an Apex Domain with GitHub Pages & Cloudflare 🛠️
+
 Since I wanted my site to be accessible at `patricknelson-devops.net` and `www.patricknelson-devops.net`,
 I had to configure an apex domain (a.k.a. root domain), and `A` and `CNAME` records.
 Here’s how I set it up:
@@ -169,13 +164,12 @@ My blog was live at `patricknelson-devops.net`, loading fast, and secured by HTT
 
 ### Automating Deployment: GitHub Actions to the Rescue 🤖🚀
 Once I had my Hugo-powered blog looking the way I wanted (after way too much theme tweaking), the next step was getting it deployed automatically.
-Sure, I could manually run hugo, commit the changes, and push them every time I updated a post… but let’s be honest, that’s not the DevOps way.
 
-Instead, I turned to GitHub Actions, because why deploy manually when you can write YAML and let the robots 🤖 handle it?
+I turned to GitHub Actions, because why deploy manually when you can write YAML and let the robots 🤖 handle it?
 
 #### Starting with the Stock Workflow 🏗️
+
 Hugo makes it ridiculously easy to deploy to GitHub Pages with GitHub Actions.
-They even provide a starter workflow, which is perfect if you, like me, enjoy pretending that setting up CI/CD is effortless.
 
 I started with their [recommended workflow](https://gohugo.io/host-and-deploy/host-on-github-pages/#step-9) and customized it to fit my repo.
 Whenever I push changes to main, the GitHub Actions workflow:
