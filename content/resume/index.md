@@ -11,7 +11,7 @@ authors: ["Patrick Nelson"]
 ```json
 {
   "name": "Patrick Nelson",
-  "title": "Senior DevOps Engineer — Azure, Terraform, GitHub Actions",
+  "title": "Senior DevOps Engineer",
   "contact": {
     "email": "patnelson2022@gmail.com",
     "linkedin": "https://www.linkedin.com/in/patrick-nelson-1b41561b6/",
