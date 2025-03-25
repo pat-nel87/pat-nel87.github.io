@@ -24,9 +24,9 @@ from installing Hugo to picking a theme that didn’t make my site look like it 
 
 I chose Hugo for the same reason I choose black coffee and CLI tools.. it’s fast, simple, and gets the job done.
 This thing is so fast, I could rebuild my entire site in the time it takes WordPress to load a settings page.
-Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown, go, git, and lightning-fast builds 
+Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown, Go, and lightning-fast builds 
 
-## Setting Up Hugo, Go, and Git 📦
+## Setup 📦
 
 Getting started with Hugo is straightforward:
 
