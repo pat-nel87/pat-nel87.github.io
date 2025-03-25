@@ -24,22 +24,22 @@ from installing Hugo to picking a theme that didn’t make my site look like it 
 
 I chose Hugo for the same reason I choose black coffee and CLI tools.. it’s fast, simple, and gets the job done.
 This thing is so fast, I could rebuild my entire site in the time it takes WordPress to load a settings page.
-Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown, Go, and lightning-fast builds 
+Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown, Go, and lightning-fast builds. 
 
 ## Setup 📦
 
 ### Prerequisites
-- I installed [Go](https://go.dev/dl/)
-- I installed [Hugo](https://gohugo.io/installation/)
-- I reviewed Hugo's [Quick Start Guide](https://gohugo.io/getting-started/quick-start/)
-- I reviewed [GitHub Pages Docs](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)
+- I installed [Go](https://go.dev/dl/).
+- I installed [Hugo](https://gohugo.io/installation/).
+- I reviewed Hugo's [Quick Start Guide](https://gohugo.io/getting-started/quick-start/).
+- I reviewed [GitHub Pages Docs](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site).
 
 ## Getting Started:
 
 ### Building the Blog with Hugo
   
 To get started:
-- I created a new Git repository to host my GitHub Page following [GitHub Pages Docs](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)
+- I created a new Git repository to host my GitHub Page following [GitHub Pages Docs](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site).
 - I created a local repository and set upstream to my new pages repo's main branch.
 - I followed the steps described in [Quick Start Guide](https://gohugo.io/getting-started/quick-start/) to start my hugo project in my new repository.
 - I then browsed [Hugo Themes](https://themes.gohugo.io/) to find a template for my page.
@@ -201,12 +201,11 @@ About building a blog 🔄
 
 If this isn’t the most developer thing ever, I don’t know what is.
 
-Along the way, I:
-- ✅ Chose Hugo for its speed, simplicity, and my growing obsession with Go.
-- ✅ Hosted it on GitHub Pages because free, automated, and Git-powered is my love language.
-- ✅ Set up Cloudflare for DNS, security, and occasional gaslighting via cached pages.
-- ✅ Automated deployments with GitHub Actions, because if I have to scp files in 2025, I’ve failed as a DevOps engineer.
-- ✅ Fell into the theme customization rabbit hole and barely made it out alive.
+- ✅ I chose Hugo for its speed, simplicity, and my growing obsession with Go.
+- ✅ I hosted it on GitHub Pages because free, automated, and Git-powered is my love language.
+- ✅ I set up Cloudflare for DNS, security, and occasional gaslighting via cached pages.
+- ✅ I automated deployments with GitHub Actions, because if I have to scp files in 2025, I’ve failed as a DevOps engineer.
+- ✅ I fell into the theme customization rabbit hole and barely made it out alive.
 
 And at the end of it all? 
 I now have a working, fully automated, beautifully over-engineered personal blog that I can… finally use to write about things other than building the blog itself.
