@@ -28,7 +28,7 @@ Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown
 
 ## Setup 📦
 
-### Prerequisites**
+### Prerequisites
 - I installed [Go](https://go.dev/dl/)
 - I installed [Hugo](https://gohugo.io/installation/)
 - I reviewed Hugo's [Quick Start Guide](https://gohugo.io/getting-started/quick-start/)
