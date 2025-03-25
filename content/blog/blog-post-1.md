@@ -31,7 +31,9 @@ I chose Hugo for the same reason I choose black coffee and CLI tools.. it’s fa
 This thing is so fast, I could rebuild my entire site in the time it takes WordPress to load a settings page.
 
 But let’s be honest—the real reason I went with Hugo?
+
 {{< svg logo="go" text="Powered by Go" styling="inline-block">}}
+
 I’ve been looking for ways to dive deeper into Go, and what better way than by making my own blog?
 Plus, as someone who lives and breathes DevOps, automation, and infrastructure-as-code,
 Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown, git, and lightning-fast builds 
