@@ -68,7 +68,7 @@ Of course, I could have just picked a theme and been done with it. But where’s
 
 - ✅ I created some [custom tooling](https://github.com/pat-nel87/pat-nel87.github.io/blob/main/scripts/svg-to-html.go) to import custom svg from [CoreUI](https://github.com/coreui/coreui-icons) as html. (Also in Go 🚀😆) 
 - ✅ I configured this tool be driven via GitHub Actions Pipeline. See my pipeline [here](https://github.com/pat-nel87/pat-nel87.github.io/blob/main/.github/workflows/svg-to-html.yaml) 
-- ✅ I imported custom svg for use with my template to add the Go Logo as a shortcode. 
+- ✅ I used this to import svg for use with my template to add the Go Logo as a shortcode. 
 
 {{< svg logo="go" text="Powered by Go" styling="inline-block">}}
 
