@@ -15,7 +15,7 @@ authors: ["Patrick Nelson"]
 
 As a Software Engineer, You can’t write a blog without first building a blog.
 So here I am, writing a blog about building a blog...
-I recently launched my personal site, powered by Hugo a blazing-fast static site generator written in Go.
+I recently launched my personal site, powered by Hugo, Go, and GitHub Actions.
 
 In this post, I’ll walk you through how I set everything up,
 from installing Hugo to picking a theme that didn’t make my site look like it was designed in 1998. 
@@ -24,7 +24,7 @@ from installing Hugo to picking a theme that didn’t make my site look like it 
 
 I chose Hugo for the same reason I choose black coffee and CLI tools.. it’s fast, simple, and gets the job done.
 This thing is so fast, I could rebuild my entire site in the time it takes WordPress to load a settings page.
-Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown, git, and lightning-fast builds 
+Hugo fits into my workflow perfectly. No databases, no bloated UI, just markdown, go, git, and lightning-fast builds 
 
 ## Setting Up Hugo, Go, and Git 📦
 
