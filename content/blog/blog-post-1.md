@@ -1,5 +1,5 @@
 ---
-title: 'A Blog about a blog'
+title: 'A Blog about a Blog'
 date: 2025-03-22T10:00:00+00:00
 draft: false
 params:
