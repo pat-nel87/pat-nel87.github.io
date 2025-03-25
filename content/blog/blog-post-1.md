@@ -76,9 +76,10 @@ And themes so minimalist that they were almost just a blank page. ("Simplicity!"
 
 **Customizing: Because We Can’t Leave Well Enough Alone 🛠️**
 Of course, I could have just picked a theme and been done with it. But where’s the fun in that? Instead, I:
-✅ Created some [custom tooling](https://github.com/pat-nel87/pat-nel87.github.io/blob/main/scripts/svg-to-html.go) to import custom svg from [CoreUI](https://github.com/coreui/coreui-icons) as html. (Also in Go 🚀😆) 
-✅ Configured this tool be driven via GitHub Actions Pipeline. See my pipeline [here](https://github.com/pat-nel87/pat-nel87.github.io/blob/main/.github/workflows/svg-to-html.yaml) 
-✅ Imported custom svg for use with my template, like this cool Go logo
+- ✅ Created some [custom tooling](https://github.com/pat-nel87/pat-nel87.github.io/blob/main/scripts/svg-to-html.go) to import custom svg from [CoreUI](https://github.com/coreui/coreui-icons) as html. (Also in Go 🚀😆) 
+- ✅ Configured this tool be driven via GitHub Actions Pipeline. See my pipeline [here](https://github.com/pat-nel87/pat-nel87.github.io/blob/main/.github/workflows/svg-to-html.yaml) 
+- ✅ Imported custom svg for use with my template, like this cool Go logo
+
 {{< svg logo="go" text="Powered by Go" styling="inline-block">}}
 
 This is how all Hugo users end up with a half-stock, half-custom Frankenstein theme that mostly works until the next theme update breaks something.
@@ -87,9 +88,9 @@ But hey, that’s the price of perfection.
 **The Final Choice: Function Over Perfection 🚀**
 After much overthinking, I finally landed on [Terminal Hugo theme](https://themes.gohugo.io/themes/hugo-theme-terminal/).
 I decided on this theme because it was:
-✅ Fast (because slow blogs make me irrationally angry)
-✅ Clean & modern (because I refuse to use a Comic Sans header)
-✅ Easily customizable (because I will tweak it again next week)
+- ✅ Fast (because slow blogs make me irrationally angry)
+- ✅ Clean & modern (because I refuse to use a Comic Sans header)
+- ✅ Easily customizable (because I will tweak it again next week)
 
 It was as easy as,
 
@@ -119,9 +120,9 @@ I still wanted my own custom domain because nothing screams "I take myself serio
 Enter Cloudflare—the Swiss Army knife of DNS and web performance.
 
 With Cloudflare, I get:
-✅ Free, fast, and reliable DNS
-✅ CDN caching (so my blog loads faster even when I barely have any visitors)
-✅ Automatic HTTPS (because even personal blogs deserve encryption)
+- ✅ Free, fast, and reliable DNS
+- ✅ CDN caching (so my blog loads faster even when I barely have any visitors)
+- ✅ Automatic HTTPS (because even personal blogs deserve encryption)
 
 Setting it up was as simple as:
 
@@ -191,9 +192,9 @@ Whenever I push changes to main, the GitHub Actions workflow:
 
 **The Result: Push, and It’s Live! 🎉**
 Now, every time I update my blog and push to main:
-✅ GitHub Actions builds my site
-✅ The public/ directory gets pushed to the gh-pages branch
-✅ GitHub Pages deploys the new version automagically 🤖
+- ✅ GitHub Actions builds my site
+- ✅ The public/ directory gets pushed to the gh-pages branch
+- ✅ GitHub Pages deploys the new version automagically 🤖
 
 No manual builds. No copy-pasting files. No stress. Just instant deployment, powered by YAML, GitHub, and Hugo.
 
@@ -211,11 +212,11 @@ About building a blog 🔄
 If this isn’t the most developer thing ever, I don’t know what is.
 
 Along the way, I:
-✅ Chose Hugo for its speed, simplicity, and my growing obsession with Go.
-✅ Hosted it on GitHub Pages because free, automated, and Git-powered is my love language.
-✅ Set up Cloudflare for DNS, security, and occasional gaslighting via cached pages.
-✅ Automated deployments with GitHub Actions, because if I have to scp files in 2025, I’ve failed as a DevOps engineer.
-✅ Fell into the theme customization rabbit hole and barely made it out alive.
+- ✅ Chose Hugo for its speed, simplicity, and my growing obsession with Go.
+- ✅ Hosted it on GitHub Pages because free, automated, and Git-powered is my love language.
+- ✅ Set up Cloudflare for DNS, security, and occasional gaslighting via cached pages.
+- ✅ Automated deployments with GitHub Actions, because if I have to scp files in 2025, I’ve failed as a DevOps engineer.
+- ✅ Fell into the theme customization rabbit hole and barely made it out alive.
 
 And at the end of it all? 
 I now have a working, fully automated, beautifully over-engineered personal blog that I can… finally use to write about things other than building the blog itself.
