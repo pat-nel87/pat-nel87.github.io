@@ -8,15 +8,7 @@ url: "/about.html"
 ---
 
 ## Hello, I'm Patrick 👋
-I’m a dedicated and curious software engineer with a deep passion for technology, mathematics, and systems design. My journey into tech began when I got my first computer (a used Tandy 286 running MS-DOS) in the early 90s and I quickly became fascinated by the possibilities hidden behind the command line. In the early 2000s, as a middle school student, I discovered Linux through Slackware and Red Hat, using it to breathe new life into aging hardware. Before high school, I was diving into networking, setting up LAN parties, and fixing computers for friends and family, always eager to explore how systems worked and how to make them work better.
-
-While technology was my first love, my early 20s led me down a different but equally enriching path. I pursued my interests in art, music, and poetry, performing in the Boston area while working in restaurants and studying for an associate degree in Electrical Engineering Science. This eventually culminated in an opportunity managing a small jazz café, where I took on the roles of equal parts bartender, barista, tapas chef, musical performer and master of ceremonies - a chaotic but rewarding experience that sharpened my ability to adapt, problem-solve, and lead in dynamic environments.
-
-Coming full-circle, my path led me back to technology when I joined Custom Automated Prosthetics (Zahn Dental / Henry Schein) as a CAD/CAM technician. This role opened the door to the tech industry as I worked my way into technical support and hardware repair serving dental lab customers across the U.S. It was here that my love of programming was reignited as I began developing PowerShell scripts to automate key workflows, making my work more efficient and driving real impact.
-
-Determined to push further, I returned to school for Computer Science during the COVID era, focusing on cloud infrastructure, automation, and software development. This led me to Johnson Controls, where I started as a software development intern and worked my way up to Senior DevOps Engineer, delivering solutions at a global scale.
-
-As I continue to evolve in my career, I remain deeply excited about the future of technology, automation, and distributed systems. I’m passionate about taking an active role in shaping the future.
+I’m a dedicated and curious software engineer with a deep passion for technology, mathematics, and systems design. My journey into tech began when I got my first computer (a used Tandy 286 running MS-DOS) in the early 90s and I quickly became fascinated by the possibilities hidden behind the command line. 
 
 ## My Expertise
 I specialize in DevOps engineering philosophy, cloud infrastructure, and automation, primarily within the Azure ecosystem. My toolkit includes Terraform for infrastructure-as-code, a preference for GitHub Actions for CI/CD pipelines, Kubernetes for container orchestration, and FluxCD for GitOps workflows. I’m also proficient in Go, Python, Powershell and Bash.
@@ -54,8 +46,6 @@ What sets me apart is my ability to jump into complex, unfamiliar legacy systems
 Whether it’s refactoring ancient shell scripts, debugging deeply embedded C++ code, or containerizing legacy services, I excel at bridging the gap between old and new. My goal is always to leave things better than I found them, building sustainable, forward-thinking solutions that empower teams and drive long-term efficiency.
 
 ## My Goals
-Looking ahead, I'm deeply interested in quantum computing, embedded systems, and advanced hardware projects, particularly focusing on how these areas intersect with DevOps, cloud infrastructure, and machine learning. My goal is to deepen my understanding and expertise in integrating these technologies, continually broadening my skill set to build robust, efficient, and innovative solutions that bridge traditional DevOps practices with emerging hardware and software paradigms.
-
 I’m always looking to expand my skill set and stay ahead of emerging technologies. Lately, I’ve been particularly interested in:
 
 - **Go and Rust** – Exploring the nuances of systems programming, performance optimization, and memory safety in modern languages.
