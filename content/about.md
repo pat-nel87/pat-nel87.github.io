@@ -8,7 +8,7 @@ url: "/about.html"
 ---
 
 ## Hello, I'm Patrick 👋
-I’m a dedicated and curious software engineer with a deep passion for technology, mathematics, and systems design. My journey into tech began when I got my first computer (a used Tandy 286 running MS-DOS) in the early 90s and I quickly became fascinated by the possibilities hidden behind the command line. 
+I’m a dedicated and curious software engineer with a deep passion for technology, mathematics, and systems design. My journey into tech began when I got my first computer (a used Tandy 286 running MS-DOS) in the early 90s. 
 
 ## My Expertise
 I specialize in DevOps engineering philosophy, cloud infrastructure, and automation, primarily within the Azure ecosystem. My toolkit includes Terraform for infrastructure-as-code, a preference for GitHub Actions for CI/CD pipelines, Kubernetes for container orchestration, and FluxCD for GitOps workflows. I’m also proficient in Go, Python, Powershell and Bash.
