@@ -1,0 +1,348 @@
+/* ============================================
+   RETRO-TERMINAL THEME — patricknelson-devops.net
+   ============================================ */
+
+/* --- Color Palette --- */
+:root {
+  --terminal-bg: #0a0a0a;
+  --terminal-green: #33ff33;
+  --terminal-green-dim: #1a9e1a;
+  --terminal-green-bright: #66ff66;
+  --terminal-amber: #ffb000;
+  --terminal-cyan: #00e5ff;
+  --terminal-text: #c0ffc0;
+  --terminal-muted: #2a6e2a;
+  --terminal-border: #1a5c1a;
+  --terminal-link: #33ff33;
+  --terminal-link-hover: #66ff66;
+  --terminal-selection-bg: #1a5c1a;
+  --terminal-selection-text: #66ff66;
+}
+
+/* --- Base Reset & Body --- */
+body {
+  background-color: var(--terminal-bg) !important;
+  color: var(--terminal-text) !important;
+  font-family: 'IBM Plex Mono', 'Fira Code', 'Courier New', monospace !important;
+  line-height: 1.7;
+}
+
+::selection {
+  background: var(--terminal-selection-bg);
+  color: var(--terminal-selection-text);
+}
+
+/* --- Links --- */
+a {
+  color: var(--terminal-link) !important;
+  text-decoration: none !important;
+  border-bottom: 1px dashed var(--terminal-muted);
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--terminal-link-hover) !important;
+  border-bottom-style: solid;
+  text-shadow: 0 0 8px var(--terminal-green);
+}
+
+/* --- Headings --- */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--terminal-text) !important;
+  text-shadow:
+    0 0 4px rgba(51, 255, 51, 0.2);
+}
+
+h1 {
+  font-family: 'Press Start 2P', cursive !important;
+  font-size: 1.2rem !important;
+  line-height: 1.8 !important;
+}
+
+h2 {
+  font-family: 'Press Start 2P', cursive !important;
+  font-size: 0.9rem !important;
+  line-height: 1.8 !important;
+}
+
+h3 {
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+}
+
+/* --- Pixel Font Utility --- */
+.pixel-font {
+  font-family: 'Press Start 2P', cursive;
+  letter-spacing: 1px;
+}
+
+/* --- CRT Scanline Overlay --- */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* --- Subtle Screen Flicker --- */
+@keyframes flicker {
+  0%   { opacity: 0.97; }
+  50%  { opacity: 1.00; }
+  100% { opacity: 0.98; }
+}
+
+.crt-container {
+  animation: flicker 4s infinite;
+}
+
+/* --- Blinking Cursor --- */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  background: var(--terminal-green);
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+}
+
+/* --- Container Override --- */
+.container {
+  background-color: var(--terminal-bg) !important;
+}
+
+/* --- Navigation Override --- */
+nav a, .menu a, header a {
+  color: var(--terminal-green) !important;
+  border-bottom: none !important;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+nav a:hover, .menu a:hover, header a:hover {
+  color: var(--terminal-amber) !important;
+  text-shadow: 0 0 8px var(--terminal-amber);
+}
+
+/* --- Code Blocks --- */
+pre, code {
+  background-color: #111 !important;
+  color: var(--terminal-green) !important;
+  border: 1px solid var(--terminal-border) !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+}
+
+pre {
+  padding: 1rem !important;
+  border-radius: 0 !important;
+}
+
+/* --- Borders & Dividers --- */
+hr {
+  border-color: var(--terminal-border);
+}
+
+/* --- Lists --- */
+ul, ol {
+  color: var(--terminal-text);
+}
+
+li::marker {
+  color: var(--terminal-green-dim);
+}
+
+/* --- Blockquotes --- */
+blockquote {
+  border-left: 3px solid var(--terminal-green-dim);
+  color: var(--terminal-muted);
+  padding-left: 1rem;
+}
+
+/* --- Strong / Bold --- */
+strong, b {
+  color: var(--terminal-green-bright);
+}
+
+/* --- Emphasis / Italic --- */
+em, i {
+  color: var(--terminal-amber);
+}
+
+/* ============================================
+   HOME PAGE
+   ============================================ */
+
+/* Matrix canvas */
+.matrix-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  background: #0a0a0a;
+  cursor: pointer;
+}
+
+/* Home page layout */
+.home-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.site-title {
+  font-size: 1.4rem !important;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px var(--terminal-green), 0 0 20px rgba(51,255,51,0.2);
+}
+
+.tagline {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--terminal-amber);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.home-grid {
+  margin: 1.5rem 0;
+}
+
+.grid-item {
+  padding: 0.4rem 0;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.grid-item .prompt {
+  color: var(--terminal-green);
+  margin-right: 0.5rem;
+}
+
+.grid-item .desc {
+  color: var(--terminal-muted);
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+.social-bar {
+  margin: 1.5rem 0;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--terminal-border);
+  border-bottom: 1px solid var(--terminal-border);
+}
+
+.social-bar .prompt {
+  color: var(--terminal-green-dim);
+  margin-right: 0.75rem;
+}
+
+.social-bar a {
+  margin-right: 1rem;
+  font-size: 0.85rem;
+}
+
+.home-footer-text {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  color: var(--terminal-text);
+}
+
+.muted {
+  color: var(--terminal-muted);
+}
+
+/* ============================================
+   RESUME PAGE
+   ============================================ */
+
+.resume-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.resume-header {
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--terminal-border);
+  color: var(--terminal-green);
+}
+
+.resume-header .pipe {
+  color: var(--terminal-muted);
+  margin: 0 0.5rem;
+}
+
+.download-link {
+  color: var(--terminal-amber) !important;
+}
+
+.resume-content h2 {
+  font-family: 'Press Start 2P', cursive !important;
+  font-size: 1rem !important;
+  color: var(--terminal-green-bright) !important;
+  margin-top: 0;
+}
+
+.resume-content h3 {
+  color: var(--terminal-amber) !important;
+  border-bottom: 1px dashed var(--terminal-border);
+  padding-bottom: 0.3rem;
+}
+
+.resume-content h4 {
+  color: var(--terminal-green) !important;
+  margin-bottom: 0.25rem;
+}
+
+.resume-content h4 + p em {
+  color: var(--terminal-muted) !important;
+  font-style: normal;
+}
+
+.terminal-output li {
+  position: relative;
+  padding-left: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.terminal-output li::before {
+  content: ">";
+  position: absolute;
+  left: 0;
+  color: var(--terminal-green-dim);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 600px) {
+  .site-title { font-size: 0.9rem !important; }
+  .tagline { font-size: 0.85rem; }
+  .grid-item .desc { display: block; margin-left: 1.5rem; }
+  h1 { font-size: 0.9rem !important; }
+  h2 { font-size: 0.75rem !important; }
+}

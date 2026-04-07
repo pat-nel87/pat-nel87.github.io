@@ -1,31 +1,133 @@
 {{ define "main" }}
-    <div class="flex flex-col h-[calc(100dvh)]">
-      {{ partial "header.html" . }}
-      <div class="flex flex-col justify-center items-center gap-4 flex-grow">
-        <div class="flex flex-col justify-center items-center gap-4">
-          <!-- Name of Website -->
-          <div class="flex flex-col gap-4 items-center justify-center">
-            <h1 class="font-bold text-5xl hover:text-sky-400 max-sm:text-4xl">
-              <a href="{{ .Site.BaseURL }}" class="whitespace-nowrap">
-                Patrick Nelson
-              </a>
-            </h1>
-            <p>Automation, Optimization, Innovation.</p>
-          </div>
-          <!-- Navigation for Big Screens -->
-          <div>
-            <ul class="flex flex-row justify-center items-center gap-6 text-xl max-sm:hidden visible">
-              {{ partial "home_menu.html" . }}
-            </ul>
-          </div>
-          <!-- Social -->
-          <div class="flex flex-row gap-6 p-4 border">
-            {{ partial "social.html" . }}
-          </div>
-        </div>
-        
-        {{ partial "footer_bottom.html" . }}
-        
+
+  <!-- Matrix binary rain canvas (plays once, then removed) -->
+  <canvas id="matrix-rain" class="matrix-canvas"></canvas>
+
+  <!-- Main content (fades in after rain) -->
+  <main id="main-content" class="home-screen" style="opacity: 0;">
+
+    <div class="home-header">
+      <h1 class="pixel-font site-title">PATRICK NELSON</h1>
+      <p class="tagline">
+        Teaching machines to keep the lights on.<span class="cursor"></span>
+      </p>
+    </div>
+
+    <div class="home-grid">
+      <div class="grid-item">
+        <span class="prompt">&gt;</span>
+        <a href="/about.html">about.exe</a>
+        <span class="desc">// who I am & where I'm headed</span>
       </div>
-  </div>
+      <div class="grid-item">
+        <span class="prompt">&gt;</span>
+        <a href="/resume/">resume.dat</a>
+        <span class="desc">// experience, skills, education</span>
+      </div>
+      <div class="grid-item">
+        <span class="prompt">&gt;</span>
+        <a href="/blog/">blog.log</a>
+        <span class="desc">// dispatches from the terminal</span>
+      </div>
+    </div>
+
+    <div class="social-bar">
+      <span class="prompt">links$</span>
+      <a href="https://github.com/pat-nel87" target="_blank">[github]</a>
+      <a href="https://www.linkedin.com/in/patrick-nelson-1b41561b6/" target="_blank">[linkedin]</a>
+    </div>
+
+    <p class="home-footer-text">
+      <span class="muted">sys:</span> Senior DevOps Engineer | AI-Augmented SRE
+      <br>
+      <span class="muted">loc:</span> Massachusetts
+      <br>
+      <span class="muted">stack:</span> Go / Python / Azure / Kubernetes / Terraform
+    </p>
+
+  </main>
+
+<script>
+(function() {
+  const canvas = document.getElementById('matrix-rain');
+  const main = document.getElementById('main-content');
+
+  // Skip animation on repeat visits within the same session
+  if (sessionStorage.getItem('introDone')) {
+    canvas.remove();
+    main.style.opacity = '1';
+    return;
+  }
+
+  const ctx = canvas.getContext('2d');
+  let w, h, columns, drops;
+  const fontSize = 14;
+  const chars = '01';
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    columns = Math.floor(w / fontSize);
+    drops = Array.from({ length: columns }, () =>
+      Math.random() * -50 | 0
+    );
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    ctx.fillStyle = 'rgba(10, 10, 10, 0.06)';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.font = fontSize + 'px "IBM Plex Mono", monospace';
+
+    for (let i = 0; i < columns; i++) {
+      const char = chars[Math.random() * chars.length | 0];
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+
+      if (Math.random() > 0.3) {
+        ctx.fillStyle = '#33ff33';
+      } else {
+        ctx.fillStyle = '#1a9e1a';
+      }
+
+      ctx.fillText(char, x, y);
+
+      if (y > h && Math.random() > 0.98) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+
+  // Run rain animation
+  const interval = setInterval(draw, 45);
+
+  // After ~2.5 seconds, fade out rain and fade in content
+  setTimeout(() => {
+    clearInterval(interval);
+
+    canvas.style.transition = 'opacity 0.8s ease-out';
+    canvas.style.opacity = '0';
+
+    setTimeout(() => {
+      canvas.remove();
+      main.style.transition = 'opacity 1s ease-in';
+      main.style.opacity = '1';
+      sessionStorage.setItem('introDone', '1');
+    }, 800);
+  }, 2500);
+
+  // Click to skip
+  canvas.addEventListener('click', () => {
+    clearInterval(interval);
+    canvas.remove();
+    main.style.opacity = '1';
+    sessionStorage.setItem('introDone', '1');
+  });
+})();
+</script>
+
 {{ end }}
