@@ -273,66 +273,324 @@ em, i {
 }
 
 /* ============================================
-   RESUME PAGE
+   RESUME PAGE — Apple II–style CRT Monitor
    ============================================ */
 
-.resume-page {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 2rem;
+/* Beige plastic palette */
+:root {
+  --beige:        #c8b88a;
+  --beige-light:  #d9ccaa;
+  --beige-dark:   #a89868;
+  --beige-shadow: #8a7c56;
+  --beige-edge:   #b5a67a;
+  --plastic-hi:   rgba(255, 255, 255, 0.15);
+  --plastic-lo:   rgba(0, 0, 0, 0.12);
 }
 
-.resume-header {
-  font-family: 'IBM Plex Mono', monospace;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--terminal-border);
-  color: var(--terminal-green);
+.crt-monitor {
+  max-width: 820px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.resume-header .pipe {
-  color: var(--terminal-muted);
-  margin: 0 0.5rem;
+/* --- Case top: chunky beige slab --- */
+.crt-case-top {
+  width: 100%;
+  height: 28px;
+  background: linear-gradient(180deg, var(--beige-light) 0%, var(--beige) 40%, var(--beige-dark) 100%);
+  border-radius: 14px 14px 0 0;
+  border: 2px solid var(--beige-shadow);
+  border-bottom: none;
+  box-shadow:
+    inset 0 2px 0 var(--plastic-hi),
+    0 -2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.download-link {
-  color: var(--terminal-amber) !important;
+/* --- Case middle: holds the screen --- */
+.crt-case-middle {
+  width: 100%;
+  background: linear-gradient(180deg, var(--beige) 0%, var(--beige-dark) 100%);
+  border-left: 2px solid var(--beige-shadow);
+  border-right: 2px solid var(--beige-shadow);
+  padding: 0 1rem;
+  box-shadow:
+    inset 2px 0 0 var(--plastic-hi),
+    inset -2px 0 0 var(--plastic-lo);
 }
 
-.resume-content h2 {
-  font-family: 'Press Start 2P', cursive !important;
-  font-size: 1rem !important;
-  color: var(--terminal-green-bright) !important;
-  margin-top: 0;
+/* Dark inset bezel around the glass */
+.crt-screen-bezel {
+  background: #1a1a1a;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.8),
+    inset 0 0 12px rgba(0, 0, 0, 0.5),
+    0 1px 0 var(--plastic-hi);
 }
 
-.resume-content h3 {
-  color: var(--terminal-amber) !important;
-  border-bottom: 1px dashed var(--terminal-border);
-  padding-bottom: 0.3rem;
-}
-
-.resume-content h4 {
-  color: var(--terminal-green) !important;
-  margin-bottom: 0.25rem;
-}
-
-.resume-content h4 + p em {
-  color: var(--terminal-muted) !important;
-  font-style: normal;
-}
-
-.terminal-output li {
+/* The green phosphor glass */
+.crt-screen {
   position: relative;
-  padding-left: 1.2rem;
-  margin-bottom: 0.5rem;
+  overflow-y: auto;
+  max-height: 65vh;
+  padding: 1.25rem 1.5rem;
+  border-radius: 6px;
+  background: #020402;
+  background-image:
+    radial-gradient(ellipse at 50% 50%, #0a0f0a 0%, #040804 60%, #010201 100%);
+  box-shadow:
+    inset 0 0 80px rgba(51, 255, 51, 0.04),
+    inset 0 0 6px rgba(51, 255, 51, 0.1),
+    0 0 2px #000;
 }
 
-.terminal-output li::before {
-  content: ">";
+/* Scrollbar — thin green */
+.crt-screen::-webkit-scrollbar { width: 5px; }
+.crt-screen::-webkit-scrollbar-track { background: #020402; }
+.crt-screen::-webkit-scrollbar-thumb {
+  background: var(--terminal-green-dim);
+  border-radius: 3px;
+}
+
+/* Scanlines on the glass */
+.crt-scanlines {
   position: absolute;
-  left: 0;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  border-radius: 6px;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Phosphor bloom — faint green haze over the whole screen */
+.crt-phosphor {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 3;
+  border-radius: 6px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(51, 255, 51, 0.02) 0%, transparent 70%);
+}
+
+/* Screen warm-up flicker on first load */
+.crt-warmup {
+  animation: warmup 1.2s ease-out;
+}
+
+@keyframes warmup {
+  0%   { opacity: 0; filter: brightness(0); }
+  20%  { opacity: 0.3; filter: brightness(2); }
+  25%  { opacity: 0; filter: brightness(0); }
+  45%  { opacity: 0.6; filter: brightness(1.5); }
+  50%  { opacity: 0.1; filter: brightness(0.3); }
+  70%  { opacity: 0.8; filter: brightness(1.2); }
+  100% { opacity: 1; filter: brightness(1); }
+}
+
+/* Terminal content */
+.crt-terminal {
+  position: relative;
+  z-index: 1;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--terminal-text);
+}
+
+/* --- Case bottom: beige slab with LED --- */
+.crt-case-bottom {
+  width: 100%;
+  background: linear-gradient(180deg, var(--beige-dark) 0%, var(--beige) 30%, var(--beige-light) 100%);
+  border-left: 2px solid var(--beige-shadow);
+  border-right: 2px solid var(--beige-shadow);
+  border-bottom: 2px solid var(--beige-shadow);
+  border-radius: 0 0 10px 10px;
+  padding: 0.6rem 1.25rem 0.75rem;
+  box-shadow:
+    inset 0 -2px 0 var(--plastic-hi),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.crt-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.crt-power-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--terminal-green);
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 0 4px var(--terminal-green),
+    0 0 10px rgba(51, 255, 51, 0.4);
+  animation: ledPulse 3s ease-in-out infinite;
+}
+
+@keyframes ledPulse {
+  0%, 100% { box-shadow: 0 0 4px var(--terminal-green), 0 0 10px rgba(51, 255, 51, 0.4); }
+  50%      { box-shadow: 0 0 2px var(--terminal-green), 0 0 4px rgba(51, 255, 51, 0.15); }
+}
+
+.crt-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+/* Chunky wedge foot */
+.crt-foot {
+  width: 60%;
+  height: 14px;
+  background: linear-gradient(180deg, var(--beige-dark) 0%, var(--beige-shadow) 100%);
+  border-radius: 0 0 6px 6px;
+  border: 2px solid var(--beige-shadow);
+  border-top: none;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Pager Content (inside screen) --- */
+
+.pager-header {
+  color: var(--terminal-green);
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--terminal-border);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pager-header .prompt {
+  color: var(--terminal-green-bright);
+  margin-right: 0.4rem;
+}
+
+.pager-content {
+  padding: 0.5rem 0;
+}
+
+.pager-line {
+  padding: 1px 0;
+}
+
+.pager-spacer {
+  height: 0.4rem;
+}
+
+.pager-h2 {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.8rem;
+  color: var(--terminal-green-bright);
+  margin-top: 0.25rem;
+  text-shadow: 0 0 10px rgba(51, 255, 51, 0.4);
+}
+
+.pager-h3 {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.65rem;
+  color: var(--terminal-green-bright);
+  margin-top: 0.25rem;
+  text-shadow: 0 0 6px rgba(51, 255, 51, 0.3);
+}
+
+.pager-h4 {
+  color: var(--terminal-green);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.pager-underline {
   color: var(--terminal-green-dim);
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.pager-divider {
+  color: var(--terminal-green-dim);
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.pager-li {
+  padding-left: 1rem;
+}
+
+.pager-li .li-marker {
+  color: var(--terminal-green-dim);
+  margin-right: 0.25rem;
+}
+
+/* Pager footer */
+.pager-footer {
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--terminal-border);
+  margin-top: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pager-more {
+  color: var(--terminal-green-bright);
+  font-weight: 700;
+  animation: moreBlink 1.5s step-end infinite;
+}
+
+.pager-more.pager-end {
+  animation: none;
+  color: var(--terminal-muted);
+}
+
+.pager-percent {
+  color: var(--terminal-green-dim);
+  font-size: 0.8rem;
+}
+
+@keyframes moreBlink {
+  0%, 70% { opacity: 1; }
+  71%, 100% { opacity: 0.4; }
+}
+
+/* Download link & page info (on the beige bezel) */
+.download-link {
+  color: #4a4230 !important;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px dashed #8a7c56 !important;
+  transition: all 0.2s ease;
+}
+
+.download-link:hover {
+  color: #2a2210 !important;
+  border-bottom-style: solid !important;
+}
+
+.download-link .prompt {
+  color: #6a5c3a;
+}
+
+.pager-page-info {
+  color: #7a6c4a;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
 }
 
 /* ============================================
@@ -345,4 +603,17 @@ em, i {
   .grid-item .desc { display: block; margin-left: 1.5rem; }
   h1 { font-size: 0.9rem !important; }
   h2 { font-size: 0.75rem !important; }
+
+  /* CRT monitor mobile */
+  .crt-monitor { margin: 1rem 0.5rem; }
+  .crt-case-top { height: 20px; border-radius: 10px 10px 0 0; }
+  .crt-case-middle { padding: 0 0.5rem; }
+  .crt-screen { padding: 0.75rem; max-height: 55vh; }
+  .crt-terminal { font-size: 0.75rem; }
+  .crt-case-bottom { padding: 0.5rem 0.75rem; }
+  .crt-badge-row { gap: 0.5rem; }
+  .crt-controls-row { flex-direction: column; gap: 0.4rem; align-items: flex-start; }
+  .pager-h2 { font-size: 0.65rem; }
+  .pager-h3 { font-size: 0.55rem; }
+  .crt-foot { width: 70%; }
 }

@@ -1,0 +1,304 @@
+{{ define "main" }}
+{{ partial "header.html" . }}
+
+<!-- Apple II–style CRT Monitor -->
+<div class="crt-monitor">
+
+  <!-- Beige plastic case — top -->
+  <div class="crt-case-top"></div>
+
+  <!-- Screen recessed into the case -->
+  <div class="crt-case-middle">
+    <div class="crt-screen-bezel">
+      <div class="crt-screen">
+
+        <!-- Scanline overlay -->
+        <div class="crt-scanlines"></div>
+
+        <!-- Screen phosphor glow layer -->
+        <div class="crt-phosphor"></div>
+
+        <!-- Terminal content -->
+        <div class="crt-terminal">
+
+          <div class="pager-header">
+            <span class="prompt">]</span> CAT RESUME.DAT
+          </div>
+
+          <div id="resume-source" style="display:none;">
+            {{ .Content }}
+          </div>
+
+          <div id="pager-content" class="pager-content"></div>
+
+          <div id="pager-footer" class="pager-footer">
+            <span id="pager-more" class="pager-more">--MORE--</span>
+            <span id="pager-percent" class="pager-percent"></span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Beige plastic case — bottom with badge & LED -->
+  <div class="crt-case-bottom">
+    <div class="crt-badge-row">
+      <div class="crt-power-led"></div>
+      <div class="crt-controls-row">
+        <a href="/Patrick-Nelson-Resume.pdf" download class="download-link">
+          <span class="prompt">&gt;</span> DOWNLOAD RESUME.PDF
+        </a>
+        <span id="pager-page-info" class="pager-page-info"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chunky stand/foot -->
+  <div class="crt-foot"></div>
+
+</div>
+
+<script>
+(function() {
+  var source = document.getElementById('resume-source');
+  var contentEl = document.getElementById('pager-content');
+  var footerEl = document.getElementById('pager-footer');
+  var moreEl = document.getElementById('pager-more');
+  var percentEl = document.getElementById('pager-percent');
+  var pageInfoEl = document.getElementById('pager-page-info');
+
+  // --- Parse source HTML into individual lines ---
+  var allLines = [];
+
+  function extractLines(container) {
+    var children = container.children;
+    for (var i = 0; i < children.length; i++) {
+      var el = children[i];
+      var tag = el.tagName.toLowerCase();
+
+      if (tag === 'hr') {
+        var div = document.createElement('div');
+        div.className = 'pager-divider';
+        div.textContent = '────────────────────────────────────────';
+        allLines.push(div);
+      } else if (tag === 'ul' || tag === 'ol') {
+        var items = el.querySelectorAll('li');
+        for (var j = 0; j < items.length; j++) {
+          var li = document.createElement('div');
+          li.className = 'pager-line pager-li';
+          li.innerHTML = '<span class="li-marker">&gt;</span> ' + items[j].innerHTML;
+          allLines.push(li);
+        }
+      } else if (tag === 'p') {
+        var html = el.innerHTML;
+        if (html.indexOf('<strong>') !== -1 && (html.indexOf('<br>') !== -1 || html.indexOf('\n') !== -1)) {
+          var parts = html.split(/<br\s*\/?>\s*/);
+          for (var k = 0; k < parts.length; k++) {
+            if (parts[k].trim()) {
+              var line = document.createElement('div');
+              line.className = 'pager-line';
+              line.innerHTML = parts[k].trim();
+              allLines.push(line);
+            }
+          }
+        } else {
+          var line = document.createElement('div');
+          line.className = 'pager-line';
+          line.innerHTML = el.innerHTML;
+          allLines.push(line);
+        }
+      } else if (tag.match(/^h[1-6]$/)) {
+        var hLine = document.createElement('div');
+        hLine.className = 'pager-line pager-' + tag;
+        hLine.innerHTML = el.innerHTML;
+        allLines.push(hLine);
+
+        if (tag === 'h2' || tag === 'h3') {
+          var underline = document.createElement('div');
+          underline.className = 'pager-line pager-underline';
+          underline.textContent = tag === 'h2'
+            ? '════════════════════════════════════════'
+            : '────────────────────────────────────────';
+          allLines.push(underline);
+        }
+      } else {
+        var clone = el.cloneNode(true);
+        clone.classList.add('pager-line');
+        allLines.push(clone);
+      }
+
+      if (tag === 'hr' || tag === 'ul' || tag === 'ol' || tag === 'p' || tag.match(/^h[1-6]$/)) {
+        var spacer = document.createElement('div');
+        spacer.className = 'pager-line pager-spacer';
+        spacer.innerHTML = '&nbsp;';
+        allLines.push(spacer);
+      }
+    }
+  }
+
+  extractLines(source);
+
+  // --- Pagination ---
+  var LINES_PER_PAGE = 24;
+  var totalPages = Math.ceil(allLines.length / LINES_PER_PAGE);
+  var currentPage = 0;
+
+  function showPage(pageNum) {
+    var start = pageNum * LINES_PER_PAGE;
+    var end = Math.min(start + LINES_PER_PAGE, allLines.length);
+
+    for (var i = start; i < end; i++) {
+      contentEl.appendChild(allLines[i]);
+    }
+
+    currentPage = pageNum;
+    var isLast = (end >= allLines.length);
+
+    if (isLast) {
+      moreEl.textContent = '(END)';
+      moreEl.classList.add('pager-end');
+      percentEl.textContent = '';
+    } else {
+      var pct = Math.round((end / allLines.length) * 100);
+      moreEl.textContent = '--More--';
+      moreEl.classList.remove('pager-end');
+      percentEl.textContent = ' (' + pct + '%)';
+    }
+
+    pageInfoEl.textContent = '[pg ' + (pageNum + 1) + '/' + totalPages + ']';
+
+    // Scroll the screen content to bottom
+    var screen = document.querySelector('.crt-screen');
+    screen.scrollTop = screen.scrollHeight;
+  }
+
+  function nextPage() {
+    if ((currentPage + 1) * LINES_PER_PAGE < allLines.length) {
+      showPage(currentPage + 1);
+    }
+  }
+
+  function showAll() {
+    var start = (currentPage + 1) * LINES_PER_PAGE;
+    for (var i = start; i < allLines.length; i++) {
+      contentEl.appendChild(allLines[i]);
+    }
+    currentPage = totalPages - 1;
+    moreEl.textContent = '(END)';
+    moreEl.classList.add('pager-end');
+    percentEl.textContent = '';
+    pageInfoEl.textContent = '[pg ' + totalPages + '/' + totalPages + ']';
+    var screen = document.querySelector('.crt-screen');
+    screen.scrollTop = screen.scrollHeight;
+  }
+
+  // --- Typing animation (first visit only) ---
+  var skipTyping = sessionStorage.getItem('resumeIntroDone');
+  var screen = document.querySelector('.crt-screen');
+
+  function finishFirstPage(endIdx) {
+    var isLast = (endIdx >= allLines.length);
+    footerEl.style.visibility = 'visible';
+    if (isLast) {
+      moreEl.textContent = '(END)';
+      moreEl.classList.add('pager-end');
+    } else {
+      var pct = Math.round((endIdx / allLines.length) * 100);
+      percentEl.textContent = ' (' + pct + '%)';
+    }
+    pageInfoEl.textContent = '[pg 1/' + totalPages + ']';
+  }
+
+  if (skipTyping) {
+    showPage(0);
+  } else {
+    var typeIndex = 0;
+    var end = Math.min(LINES_PER_PAGE, allLines.length);
+    var typingDone = false;
+
+    footerEl.style.visibility = 'hidden';
+
+    // Blinking cursor during typing
+    var cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    contentEl.appendChild(cursor);
+
+    // Screen warm-up: brief flicker before typing starts
+    screen.classList.add('crt-warmup');
+    setTimeout(function() {
+      screen.classList.remove('crt-warmup');
+      // Start typing after warm-up
+      typeLine();
+    }, 1200);
+
+    function typeLine() {
+      if (typingDone) return;
+      if (typeIndex >= end) {
+        cursor.remove();
+        sessionStorage.setItem('resumeIntroDone', '1');
+        typingDone = true;
+        currentPage = 0;
+        finishFirstPage(end);
+        return;
+      }
+
+      contentEl.insertBefore(allLines[typeIndex], cursor);
+      typeIndex++;
+
+      // Slow it down — feel the characters land
+      var line = allLines[typeIndex - 1];
+      var delay;
+      if (line.classList.contains('pager-spacer')) {
+        delay = 80;
+      } else if (line.classList.contains('pager-h2') || line.classList.contains('pager-h3')) {
+        delay = 250; // Pause on headings
+      } else if (line.classList.contains('pager-divider') || line.classList.contains('pager-underline')) {
+        delay = 180;
+      } else {
+        delay = 120 + Math.random() * 60; // Natural variance
+      }
+      setTimeout(typeLine, delay);
+    }
+
+    // Click to skip typing
+    screen.addEventListener('click', function skipHandler() {
+      if (typingDone) return;
+      typingDone = true;
+      cursor.remove();
+      screen.classList.remove('crt-warmup');
+      for (var i = typeIndex; i < end; i++) {
+        contentEl.appendChild(allLines[i]);
+      }
+      sessionStorage.setItem('resumeIntroDone', '1');
+      currentPage = 0;
+      finishFirstPage(end);
+      screen.removeEventListener('click', skipHandler);
+    });
+  }
+
+  // --- Keyboard & click controls ---
+  document.addEventListener('keydown', function(e) {
+    var key = e.key;
+    if (key === ' ' || key === 'Enter') {
+      e.preventDefault();
+      nextPage();
+    } else if (key === 'q') {
+      showAll();
+    } else if (key === 'ArrowDown' || key === 'j') {
+      e.preventDefault();
+      nextPage();
+    } else if (key === 'ArrowUp' || key === 'k') {
+      e.preventDefault();
+      var screen = document.querySelector('.crt-screen');
+      screen.scrollBy(0, -40);
+    }
+  });
+
+  moreEl.addEventListener('click', function() {
+    nextPage();
+  });
+
+})();
+</script>
+{{ end }}
