@@ -1,11 +1,9 @@
 ---
-title: "resume.dat"
+title: "Patrick Nelson — Resume"
 date: 2026-04-15
 draft: false
-slug: "resume"
+slug: "resume-print"
 layout: "single"
-tags: ["resume", "platform-engineering", "devops", "terraform", "azure", "kubernetes", "mcp", "ai"]
-authors: ["Patrick Nelson"]
 ---
 
 ## Patrick Nelson
