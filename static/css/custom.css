@@ -335,7 +335,7 @@ em, i {
 .crt-screen {
   position: relative;
   overflow-y: auto;
-  max-height: 65vh;
+  height: 65vh;
   padding: 1.25rem 1.5rem;
   border-radius: 6px;
   background: #020402;
@@ -608,7 +608,7 @@ em, i {
   .crt-monitor { margin: 1rem 0.5rem; }
   .crt-case-top { height: 20px; border-radius: 10px 10px 0 0; }
   .crt-case-middle { padding: 0 0.5rem; }
-  .crt-screen { padding: 0.75rem; max-height: 55vh; }
+  .crt-screen { padding: 0.75rem; height: 55vh; }
   .crt-terminal { font-size: 0.75rem; }
   .crt-case-bottom { padding: 0.5rem 0.75rem; }
   .crt-badge-row { gap: 0.5rem; }
