@@ -140,6 +140,16 @@ nav a:hover, .menu a:hover, header a:hover {
   text-shadow: 0 0 8px var(--terminal-amber);
 }
 
+/* --- Mobile Dropdown Menu --- */
+/* Tailwind's compiled CSS lacks the arbitrary bg-[#0a0a0a] class,
+   so we apply terminal-black and z-index here instead. */
+@media not all and (min-width: 1024px) {
+  .dropdown-menu {
+    background-color: var(--terminal-bg) !important;
+    z-index: 40;
+  }
+}
+
 /* --- Code Blocks --- */
 pre, code {
   background-color: #111 !important;
