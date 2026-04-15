@@ -11,7 +11,7 @@ authors: ["Patrick Nelson"]
 
 ---
 
-## Introduction 👋
+## Introduction
 
 If you've spent any time troubleshooting a misbehaving Kubernetes cluster or chasing down slow queries in Postgres,
 you know the drill — open six terminal tabs, run a dozen commands, mentally stitch together the results,
@@ -28,7 +28,7 @@ and get real, structured answers pulled directly from live systems.
 In this post, I'll walk through two tools I've been working on:
 [**kube-doctor-mcp**](https://github.com/pat-nel87/kube-doctor-mcp) and [**pg-doctor**](https://github.com/pat-nel87/pg-doctor).
 
-## What is MCP, and Why Should You Care? 🤔
+## What is MCP, and Why Should You Care?
 
 MCP (Model Context Protocol) is essentially a standard interface between AI assistants and external tools.
 Think of it like a USB port for AI — plug in a tool, and the AI can use it without needing custom integrations
@@ -39,11 +39,11 @@ for each platform. Now you write one MCP server, and it works everywhere — Cla
 Claude Desktop, you name it.
 
 The key constraints I design around:
-- ✅ **Read-only** — These tools inspect. They never mutate. Sleep well at night.
-- ✅ **Structured output** — Human-readable text with severity tags, not raw JSON dumps.
-- ✅ **Diagrams** — Mermaid diagrams for topology, dependencies, and security audits rendered inline.
+- **Read-only** — These tools inspect. They never mutate. Sleep well at night.
+- **Structured output** — Human-readable text with severity tags, not raw JSON dumps.
+- **Diagrams** — Mermaid diagrams for topology, dependencies, and security audits rendered inline.
 
-## kube-doctor-mcp: Your Cluster's New Best Friend 🩺☸️
+## kube-doctor-mcp: Kubernetes Cluster Diagnostics
 
 [**kube-doctor-mcp**](https://github.com/pat-nel87/kube-doctor-mcp) is a Kubernetes diagnostics MCP server written in Go.
 It connects directly to the Kubernetes API via kubeconfig — no `kubectl` dependency required — and exposes
@@ -64,7 +64,7 @@ Instead of rattling off all 48 tools, here's how they break down by category:
 | **FluxCD GitOps** | 8 dedicated tools for Kustomizations, HelmReleases, sources, image policies, and Flux system health |
 | **Doctor Mode** | Composite diagnostics — `diagnose_pod`, `diagnose_namespace`, `diagnose_cluster` with remediation suggestions |
 
-### The Doctor Tools Are Where It Gets Fun 🔍
+### The Doctor Tools
 
 The individual inspection tools are useful, but the *doctor* tools are where the real value lives.
 `diagnose_pod` doesn't just tell you a pod is unhealthy — it checks resource limits, restart counts,
@@ -79,14 +79,14 @@ image pull status, readiness probes, and recent events, then synthesizes finding
 `diagnose_cluster` goes even bigger — it's a full cluster health check in one call.
 Think of it as your morning standup, but the AI reads every namespace before you've finished your coffee.
 
-### FluxCD Support ⚡
+### FluxCD Support
 
 If you're running GitOps with FluxCD (and you should be), there are 8 dedicated Flux tools
 for inspecting Kustomizations, HelmReleases, sources, and image policies.
 `diagnose_flux_system` gives you a full system health check with a Mermaid topology diagram.
 No more `flux get all -A` and squinting at terminal output.
 
-### Mermaid Diagrams 📊
+### Mermaid Diagrams
 
 Several tools generate Mermaid diagrams that render inline in supported AI hosts:
 - Network connectivity maps from `analyze_pod_connectivity`
@@ -97,13 +97,13 @@ Several tools generate Mermaid diagrams that render inline in supported AI hosts
 
 ### Tech Stack
 
-- ✅ Written in **Go** — because Kubernetes tooling belongs in Go
-- ✅ Uses `client-go` directly — no shelling out to kubectl
-- ✅ `controller-runtime` for FluxCD CRD support
-- ✅ MCP stdio transport — single binary, no daemon, no dependencies
-- ✅ 30-second timeout on all API calls — won't hang your AI session
+- Written in **Go** — because Kubernetes tooling belongs in Go
+- Uses `client-go` directly — no shelling out to kubectl
+- `controller-runtime` for FluxCD CRD support
+- MCP stdio transport — single binary, no daemon, no dependencies
+- 30-second timeout on all API calls — won't hang your AI session
 
-## pg-doctor: Database Diagnostics in Your Editor 🩺🐘
+## pg-doctor: Database Diagnostics in Your Editor
 
 [**pg-doctor**](https://github.com/pat-nel87/pg-doctor) takes the same diagnostic philosophy and applies it to PostgreSQL.
 It's a VS Code extension that exposes **14 Language Model Tools** to GitHub Copilot Chat,
@@ -135,7 +135,7 @@ so you can interrogate your databases without leaving your editor.
 | **Connection Diagram** | Pie chart of connection pool state |
 | **Table Size Diagram** | Bar chart of top tables by size with data/index/bloat breakdown |
 
-### The Triage Tool 🚨
+### The Triage Tool
 
 The `#pgTriage` tool is the one I reach for first. It runs all 10 diagnostic checks in one shot
 and returns a single prioritized report sorted by severity. Instead of running each check individually
@@ -145,20 +145,20 @@ It's like having a DBA on call who already checked everything before you asked.
 
 ### Design Decisions
 
-- ✅ **Read-only connections** — `default_transaction_read_only=on` is set at the connection level. No accidents.
-- ✅ **10-second statement timeout** — Won't tank your production database with a runaway diagnostic query.
-- ✅ **Multi-database support** — Configure multiple databases via `~/.pg-doctor.json` with aliases.
-- ✅ **Minimal dependencies** — The only runtime dependency is the `pg` driver. That's it.
+- **Read-only connections** — `default_transaction_read_only=on` is set at the connection level. No accidents.
+- **10-second statement timeout** — Won't tank your production database with a runaway diagnostic query.
+- **Multi-database support** — Configure multiple databases via `~/.pg-doctor.json` with aliases.
+- **Minimal dependencies** — The only runtime dependency is the `pg` driver. That's it.
 
 ### Tech Stack
 
-- ✅ Written in **TypeScript**
-- ✅ VS Code extension using the Language Model Tools API
-- ✅ Works in GitHub Copilot Chat Agent Mode
-- ✅ Single runtime dependency (`pg`)
-- ✅ esbuild for fast compilation
+- Written in **TypeScript**
+- VS Code extension using the Language Model Tools API
+- Works in GitHub Copilot Chat Agent Mode
+- Single runtime dependency (`pg`)
+- esbuild for fast compilation
 
-## The Pattern: Read-Only Diagnostic Servers 🧩
+## The Pattern: Read-Only Diagnostic Servers
 
 Both tools follow the same architectural pattern that I think works really well for infrastructure diagnostics:
 
@@ -168,23 +168,24 @@ Both tools follow the same architectural pattern that I think works really well 
 4. **Inline diagrams.** Mermaid diagrams rendered in the AI chat give you visual context without switching windows.
 5. **Zero external dependencies at runtime.** One binary (Go) or one extension (VS Code). No CLI tools, no agents, no sidecars.
 
-## What's Next? 🚀
+## What's Next
 
-I'm continuing to expand both tools. On the Kubernetes side, I'm looking at deeper observability integrations
-and support for additional GitOps tooling. On the Postgres side, there's room for query plan analysis,
-pg_stat_wal metrics, and more sophisticated bloat detection.
+These two tools are the first pieces of something bigger — what I've been thinking of as an **AI Observability Mesh**.
 
-The bigger picture is building out a suite of diagnostic MCP servers that cover the infrastructure stack —
-from the database layer up through the orchestrator. The goal is simple: make it so an AI assistant
-can help you triage an incident end-to-end without you needing to context-switch between tools.
+The idea is an MCP gateway that acts as a universal diagnostic control plane across Azure resources.
+Instead of individual MCP servers that each know about one system, you'd have a single entry point
+that can route diagnostic queries across the full stack — from Postgres query performance up through
+AKS pod health, FluxCD reconciliation state, and Azure resource metrics.
+An AI assistant could triage an incident end-to-end without you needing to context-switch between tools
+or even know which layer the problem lives in.
+
+kube-doctor and pg-doctor are proving out the pattern. The next step is the connective tissue.
 
 If you want to try them out or contribute, check them out on GitHub:
 - [kube-doctor-mcp](https://github.com/pat-nel87/kube-doctor-mcp)
 - [pg-doctor](https://github.com/pat-nel87/pg-doctor)
 
-## Let's Connect! 🌐
+## Let's Connect
 
 If you're building MCP tools or working on AI-assisted operations, I'd love to hear about it.
-Reach out via contacts on my [resume page](/resume), and let's connect!
-
-Happy diagnosing! 🎉
+Reach out via contacts on my [resume page](/resume), and let's connect.
