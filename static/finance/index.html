@@ -466,7 +466,8 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
     </div>
 
     <div class="wb-actions">
-      <button class="wb-btn wb-btn--primary" id="btn-demo" type="button">Load Apple FY2025</button>
+      <button class="wb-btn wb-btn--primary" data-preset="apple" type="button">Load Apple FY2025</button>
+      <button class="wb-btn wb-btn--primary" data-preset="jci" type="button">Load Johnson Controls FY2025</button>
       <button class="wb-btn" id="btn-clear" type="button">Clear all</button>
       <button class="wb-btn" id="btn-save" type="button">Save to file</button>
       <button class="wb-btn" id="btn-load" type="button">Open file</button>
@@ -488,7 +489,7 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
   <section class="wb-panel" role="tabpanel" id="panel-bs" aria-labelledby="tab-bs">
     <div class="wb-panel-head">
       <h2>Classified Balance Sheet</h2>
-      <p>A point-in-time statement: assets on the left of the equation, the claims against them on the right. Two years are required — every turnover ratio needs an average balance.</p>
+      <p>A point-in-time statement: assets on the left of the equation, the claims against them on the right. Three dates are shown because turnover ratios need an opening <em>and</em> closing balance — so computing them for the prior year takes a balance sheet date that only the previous year&rsquo;s filing carries.</p>
     </div>
     <div class="wb-sheet" id="sheet-bs"></div>
     <div class="wb-check" id="check-bs" data-state="idle">Enter figures to check the accounting equation.</div>
@@ -547,7 +548,8 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
     <div class="wb-figs" id="figs"></div>
   </section>
 
-  <p class="wb-foot">Built for the Bridge to Business accounting session. Figures you enter stay in this browser — nothing is uploaded. The Apple demo data is the FY2023&ndash;FY2025 consolidated statements used in the course materials.</p>
+  <p class="wb-foot">Built for the Bridge to Business accounting session. Figures you enter stay in this browser — nothing is uploaded, and your work is kept here between visits.<br><br>
+  <strong>Apple FY2025</strong> is the FY2023&ndash;FY2025 statements from the course materials; its FY2023 balance sheet column is empty because the deck prints only two dates. <strong>Johnson Controls FY2025</strong> is drawn from the FY2025 and FY2024 Form 10-K and is presented on a <em>continuing operations</em> basis — JCI divested its Residential &amp; Light Commercial HVAC business in 2025, so net income here is income from continuing operations (1,724), not the headline 3,513 that includes the gain on sale.</p>
 
 </div>
 
@@ -586,8 +588,9 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
       { k: 'grp', l: 'Non-current assets' },
       { k: 'in', id: 'mktSecLt',    l: 'Marketable securities' },
       { k: 'in', id: 'ppe',         l: 'Property, plant and equipment, net' },
+      { k: 'in', id: 'intangibles', l: 'Goodwill and other intangible assets, net' },
       { k: 'in', id: 'otherNca',    l: 'Other non-current assets' },
-      { k: 'calc', id: 'tnca', l: 'Total non-current assets', f: function (g) { return sum(g, ['mktSecLt','ppe','otherNca']); } },
+      { k: 'calc', id: 'tnca', l: 'Total non-current assets', f: function (g) { return sum(g, ['mktSecLt','ppe','intangibles','otherNca']); } },
       { k: 'calc', id: 'ta', l: 'Total assets', dbl: true, f: function (g) { return sum(g, ['tca','tnca']); } },
       { k: 'gap' },
       { k: 'sec', l: 'Liabilities and shareholders’ equity' },
@@ -609,7 +612,8 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
       { k: 'in', id: 'cs',   l: 'Common stock and additional paid-in capital' },
       { k: 'in', id: 're',   l: 'Retained earnings / (accumulated deficit)' },
       { k: 'in', id: 'aoci', l: 'Accumulated other comprehensive income / (loss)' },
-      { k: 'calc', id: 'te', l: 'Total shareholders’ equity', f: function (g) { return sum(g, ['cs','re','aoci']); } },
+      { k: 'in', id: 'nci',  l: 'Noncontrolling interests' },
+      { k: 'calc', id: 'te', l: 'Total shareholders’ equity', f: function (g) { return sum(g, ['cs','re','aoci','nci']); } },
       { k: 'calc', id: 'tle', l: 'Total liabilities and shareholders’ equity', dbl: true, f: function (g) { return sum(g, ['tl','te']); } }
     ],
 
@@ -628,7 +632,8 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
       { k: 'grp', l: 'Operating expenses' },
       { k: 'in', id: 'rd',  l: 'Research and development' },
       { k: 'in', id: 'sga', l: 'Selling, general and administrative' },
-      { k: 'calc', id: 'opex', l: 'Total operating expenses', f: function (g) { return sum(g, ['rd','sga']); } },
+      { k: 'in', id: 'otherOpex', l: 'Other operating expenses (restructuring, impairment)' },
+      { k: 'calc', id: 'opex', l: 'Total operating expenses', f: function (g) { return sum(g, ['rd','sga','otherOpex']); } },
       { k: 'gap' },
       { k: 'calc', id: 'ebit', l: 'Operating income (EBIT)', f: function (g) { return (g('gross') == null && g('opex') == null) ? null : diff(g('gross'), g('opex')); } },
       { k: 'in', id: 'otherInc', l: 'Other income / (expense), net' },
@@ -656,7 +661,8 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
       { k: 'in', id: 'csIssued',   l: 'Common stock issued' },
       { k: 'in', id: 'csWithheld', l: 'Common stock withheld — net share settlement' },
       { k: 'in', id: 'csSbc',      l: 'Share-based compensation' },
-      { k: 'calc', id: 'csEnd', l: 'Ending balances', f: function (g) { return sum(g, ['csBegin','csIssued','csWithheld','csSbc']); } },
+      { k: 'in', id: 'csRepurch',  l: 'Repurchases and retirements of shares' },
+      { k: 'calc', id: 'csEnd', l: 'Ending balances', f: function (g) { return sum(g, ['csBegin','csIssued','csWithheld','csSbc','csRepurch']); } },
       { k: 'gap' },
       { k: 'grp', l: 'Retained earnings / (accumulated deficit)' },
       { k: 'in', id: 'reBegin',    l: 'Beginning balances' },
@@ -671,7 +677,8 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
       { k: 'in', id: 'aociOci',   l: 'Other comprehensive income / (loss)' },
       { k: 'calc', id: 'aociEnd', l: 'Ending balances', f: function (g) { return sum(g, ['aociBegin','aociOci']); } },
       { k: 'gap' },
-      { k: 'calc', id: 'eqEnd', l: 'Total shareholders’ equity, ending balances', dbl: true, f: function (g) { return sum(g, ['csEnd','reEnd','aociEnd']); } },
+      { k: 'in', id: 'nciEnd', l: 'Noncontrolling interests, ending balances' },
+      { k: 'calc', id: 'eqEnd', l: 'Total shareholders’ equity, ending balances', dbl: true, f: function (g) { return sum(g, ['csEnd','reEnd','aociEnd','nciEnd']); } },
       { k: 'in', id: 'dpsEq', l: 'Dividends declared per share or RSU', dec: 2 }
     ],
 
@@ -710,12 +717,16 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
       { k: 'in', id: 'otherFin',     l: 'Other' },
       { k: 'calc', id: 'cff', l: 'Cash generated by / (used in) financing activities', f: function (g) { return sum(g, ['taxShare','divPaid','repurch','issueDebt','repayDebt','commPaperNet','otherFin']); } },
       { k: 'gap' },
-      { k: 'calc', id: 'netChange', l: 'Increase / (decrease) in cash', f: function (g) { return sum(g, ['cfo','cfi','cff']); } },
+      { k: 'in', id: 'cfOther', l: 'Discontinued operations, exchange rates and other' },
+      { k: 'calc', id: 'netChange', l: 'Increase / (decrease) in cash', f: function (g) { return sum(g, ['cfo','cfi','cff','cfOther']); } },
       { k: 'calc', id: 'cashEnd', l: 'Cash and equivalents, ending balances', dbl: true, f: function (g) { return sum(g, ['cashBegin','netChange']); } }
     ]
   };
 
-  var YEARS = { bs: 2, is: 3, eq: 3, cf: 3 };
+  /* The balance sheet carries three dates so that prior-year turnover ratios —
+     which need an opening AND closing balance for the prior year — can compute.
+     A 10-K only prints two, so the third comes from the previous year's filing. */
+  var YEARS = { bs: 3, is: 3, eq: 3, cf: 3 };
   var TREND_METRICS = [
     { id: 'sales', l: 'Net sales' },
     { id: 'ni',    l: 'Net income' },
@@ -1756,10 +1767,18 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
     }).filter(function (s) { return s.values.some(function (v) { return v != null; }); });
 
     if (tSeries.length) {
+      /* Plot only the years that actually carry data — fewer than six is normal
+         when the filings on hand don't reach back that far. */
+      var lo = 6, hi = -1;
+      tSeries.forEach(function (s) {
+        s.values.forEach(function (v, i) { if (v != null) { if (i < lo) lo = i; if (i > hi) hi = i; } });
+      });
+      var span = hi - lo + 1;
       mount.appendChild(lineChart({
-        title: 'Six-Year Trend',
+        title: span + '-Year Trend',
         sub: 'Figures ' + unitsWord() + '. Entered on the Trends tab.',
-        xLabels: tLabels, series: tSeries
+        xLabels: tLabels.slice(lo, hi + 1),
+        series: tSeries.map(function (s) { return { name: s.name, values: s.values.slice(lo, hi + 1) }; })
       }));
     }
 
@@ -1902,6 +1921,8 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
       termDebtLt: ['78328', '85750'], otherNcl: ['41549', '45888'],
       cs: ['93568', '83276'], re: ['-14264', '-19154'], aoci: ['-5571', '-7172']
     },
+    /* The course deck prints only two balance sheet dates, so the FY2023 column
+       stays empty and FY2024's turnover ratios remain uncomputable. */
     is: {
       salesProd: ['307003', '294866', '298085'], salesServ: ['109158', '96169', '85200'],
       cosProd: ['194116', '185233', '189282'], cosServ: ['26844', '25119', '24855'],
@@ -1943,6 +1964,83 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
     },
     trendLabels: {}
   };
+
+  /* Johnson Controls International plc — FY2025 and FY2024 Form 10-K.
+     Presented on a CONTINUING OPERATIONS basis: JCI divested Residential &
+     Light Commercial HVAC in 2025, so income statement, cash flow and the
+     trend series all exclude discontinued operations. Net income here is
+     therefore income from continuing operations (1,724), not the headline
+     3,513 that includes the divestiture gain.
+
+     Line items the 10-K breaks out more finely than this workbook are pooled
+     into the nearest heading; every subtotal still ties to the filing. Share
+     counts are in MILLIONS for JCI, hence the shareUnits override. */
+  var JCI = {
+    meta: { company: 'Johnson Controls International plc', units: '1000000',
+            shareUnits: '1000000', days: '365',
+            years: ['FY2025', 'FY2024', 'FY2023'],
+            trendYears: ['2022', '2023', '2024', '2025', '', ''] },
+    bs: {
+      cash:        ['379', '606', '828'],
+      ar:          ['6269', '6051', '5494'],
+      inv:         ['1820', '1774', '1872'],
+      otherCa:     ['1694', '2748', '2543'],
+      ppe:         ['2193', '2403', '2374'],
+      intangibles: ['20246', '20855', '21544'],
+      otherNca:    ['5338', '8258', '7587'],
+      ap:          ['3614', '3389', '3498'],
+      otherCl:     ['3568', '4917', '4657'],
+      defRev:      ['2470', '2160', '1923'],
+      commPaper:   ['723', '953', '361'],
+      termDebtCur: ['566', '536', '645'],
+      termDebtLt:  ['8591', '8004', '7818'],
+      otherNcl:    ['5453', '5375', '5646'],
+      cs:          ['13569', '16214', '16116'],
+      re:          ['0', '848', '1384'],
+      aoci:        ['-642', '-964', '-955'],
+      nci:         ['27', '1263', '1149']
+    },
+    is: {
+      salesProd: ['16124', '15967', '15789'], salesServ: ['7472', '6985', '6542'],
+      cosProd:   ['10543', '10677', '10736'], cosServ:   ['4461', '4198', '3791'],
+      sga:       ['5764', '5661', '5387'],    otherOpex: ['546', '510', '1049'],
+      otherInc:  ['-313', '-384', '-255'],    tax:       ['245', '111', '-468'],
+      epsBasic:  ['2.64', '2.09', '2.28'],    epsDiluted: ['2.63', '2.08', '2.27'],
+      shBasic:   ['651.8', '673.8', '684.3'], shDiluted: ['654.1', '676.0', '687.4'],
+      intExp:    ['319', '342', '258'],       dpsDecl:   ['1.51', '1.48', '1.45']
+    },
+    eq: {
+      eqBegin:    ['17361', '17694', '17402'],
+      csBegin:    ['16214', '16116', '16028'], csIssued:   ['112', '41', '40'],
+      csWithheld: ['-34', '-28', '-37'],       csSbc:      ['104', '85', '85'],
+      csRepurch:  ['-2827', '0', '0'],
+      reBegin:    ['848', '1384', '1151'],     reNi:       ['3291', '1705', '1849'],
+      reDiv:      ['-975', '-995', '-991'],    reRepurch:  ['-3164', '-1246', '-625'],
+      aociBegin:  ['-964', '-955', '-911'],    aociOci:    ['322', '-9', '-44'],
+      nciEnd:     ['27', '1263', '1149'],      dpsEq:      ['1.51', '1.48', '1.45']
+    },
+    cf: {
+      cashBegin: ['767', '917', '2064'],
+      cfNi: ['1724', '1411', '1581'], da: ['865', '816', '745'],
+      sbc: ['140', '107', '107'],     otherAdj: ['553', '-109', '115'],
+      dAr: ['-211', '-537', '-259'],  dInv: ['-75', '-17', '-58'],
+      dOtherAssets: ['-581', '-482', '-187'],
+      dAp: ['694', '645', '-85'],     dOtherLiab: ['-555', '-266', '-103'],
+      capex: ['-434', '-494', '-446'], otherInv: ['22', '310', '-647'],
+      divPaid: ['-976', '-1000', '-980'], repurch: ['-5991', '-1246', '-625'],
+      issueDebt: ['1765', '1281', '1173'], repayDebt: ['-1648', '-924', '-1555'],
+      commPaperNet: ['38', '48', '-75'], otherFin: ['28', '-107', '3'],
+      cfOther: ['4273', '414', '149']
+    },
+    trend: {
+      sales: ['20637', '22331', '22952', '23596'],
+      ni:    ['1294', '1581', '1411', '1724'],
+      cfo:   ['1237', '1856', '1568', '2554']
+    },
+    trendLabels: { ni: 'Income from continuing operations', cfo: 'Operating cash flow (continuing)' }
+  };
+
+  var PRESETS = { apple: APPLE, jci: JCI };
 
   /* =========================================================
      12. Wiring
@@ -2023,10 +2121,19 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
   }
 
   function initButtons() {
-    document.getElementById('btn-demo').addEventListener('click', function () {
-      state = JSON.parse(JSON.stringify(APPLE));
-      paintInputs();
-      refresh({ now: true });
+    document.querySelectorAll('[data-preset]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var preset = PRESETS[btn.getAttribute('data-preset')];
+        if (!preset) return;
+        state = JSON.parse(JSON.stringify(blank()));
+        ['bs', 'is', 'eq', 'cf', 'trend'].forEach(function (k) {
+          state[k] = JSON.parse(JSON.stringify(preset[k] || {}));
+        });
+        state.meta = JSON.parse(JSON.stringify(preset.meta));
+        state.trendLabels = JSON.parse(JSON.stringify(preset.trendLabels || {}));
+        paintInputs();
+        refresh({ now: true });
+      });
     });
     document.getElementById('btn-clear').addEventListener('click', function () {
       if (!confirm('Clear every figure in the workbook? This cannot be undone.')) return;
