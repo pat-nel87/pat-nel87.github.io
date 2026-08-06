@@ -1,0 +1,2096 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Financial Statement Workbook</title>
+</head>
+<body>
+<style>
+/* ============================================================
+   Ledger — a financial statement analysis workbook
+   Visual language taken from the source documents: statement
+   blue, parenthesised negatives, single rule under subtotals,
+   double rule under grand totals, tabular figures throughout.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+
+:root {
+  color-scheme: light;
+
+  --plane:        #f1f3f6;
+  --card:         #fbfbfc;
+  --card-inset:   #f6f7fa;
+  --ink:          #10141a;
+  --ink-2:        #414b59;
+  --muted:        #6b7686;
+  --rule:         #dde1e8;
+  --rule-strong:  #b9c1cd;
+
+  --navy:         #16365c;
+  --navy-2:       #29527f;
+  --navy-wash:    #e8eef7;
+
+  --pos:          #006300;
+  --neg:          #b3282a;
+  --warn:         #a56a00;
+  --warn-wash:    #fdf3dc;
+  --pos-wash:     #e6f3e6;
+  --neg-wash:     #fbeaea;
+
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+
+  --grid:         #e4e7ed;
+  --axis:         #c3c9d4;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans:  system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono:  ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  --shadow: 0 1px 2px rgba(16,20,26,.05), 0 8px 24px -14px rgba(16,20,26,.22);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --plane:        #0e1116;
+    --card:         #191c20;
+    --card-inset:   #14171c;
+    --ink:          #eef1f5;
+    --ink-2:        #b7c0cd;
+    --muted:        #8b95a4;
+    --rule:         #2a2f38;
+    --rule-strong:  #3d4552;
+
+    --navy:         #8fb4e6;
+    --navy-2:       #a8c6ee;
+    --navy-wash:    #1a2533;
+
+    --pos:          #0ca30c;
+    --neg:          #ef7c7c;
+    --warn:         #fab219;
+    --warn-wash:    #2b2312;
+    --pos-wash:     #12240f;
+    --neg-wash:     #2b1416;
+
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s3: #199e70;
+
+    --grid:         #23272f;
+    --axis:         #39404b;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --plane:        #0e1116;
+  --card:         #191c20;
+  --card-inset:   #14171c;
+  --ink:          #eef1f5;
+  --ink-2:        #b7c0cd;
+  --muted:        #8b95a4;
+  --rule:         #2a2f38;
+  --rule-strong:  #3d4552;
+  --navy:         #8fb4e6;
+  --navy-2:       #a8c6ee;
+  --navy-wash:    #1a2533;
+  --pos:          #0ca30c;
+  --neg:          #ef7c7c;
+  --warn:         #fab219;
+  --warn-wash:    #2b2312;
+  --pos-wash:     #12240f;
+  --neg-wash:     #2b1416;
+  --s1: #3987e5;
+  --s2: #d95926;
+  --s3: #199e70;
+  --grid:         #23272f;
+  --axis:         #39404b;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+}
+
+body {
+  background: var(--plane);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.wb-shell { max-width: 1140px; margin: 0 auto; padding: 0 20px 96px; }
+
+/* ---------- masthead ---------- */
+
+.wb-masthead {
+  padding: 40px 0 20px;
+  border-bottom: 1px solid var(--rule);
+}
+.wb-eyebrow {
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600; margin: 0 0 8px;
+}
+.wb-title {
+  font-family: var(--serif);
+  font-size: clamp(30px, 4.4vw, 44px);
+  line-height: 1.08; margin: 0; font-weight: 600;
+  letter-spacing: -.015em; text-wrap: balance;
+  color: var(--ink);
+}
+.wb-title em { font-style: italic; color: var(--navy); }
+.wb-lede {
+  margin: 12px 0 0; max-width: 62ch; color: var(--ink-2); font-size: 15px;
+}
+
+/* ---------- setup strip ---------- */
+
+.wb-setup {
+  display: grid; gap: 14px 20px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin: 22px 0 0; padding: 16px 18px;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+  box-shadow: var(--shadow);
+}
+.wb-field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.wb-field > label {
+  font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600;
+}
+.wb-field input, .wb-field select {
+  font: inherit; font-size: 14px; color: var(--ink);
+  background: transparent; border: 0; border-bottom: 1px solid var(--rule-strong);
+  padding: 4px 2px; border-radius: 0; width: 100%; min-width: 0;
+}
+.wb-field select { border: 1px solid var(--rule-strong); border-radius: 2px; padding: 5px 4px; background: var(--card); }
+.wb-field input:focus-visible, .wb-field select:focus-visible {
+  outline: 2px solid var(--navy); outline-offset: 2px; border-bottom-color: transparent;
+}
+
+.wb-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+.wb-btn {
+  font: inherit; font-size: 13px; font-weight: 500;
+  padding: 7px 13px; border-radius: 2px; cursor: pointer;
+  background: var(--card); color: var(--ink-2);
+  border: 1px solid var(--rule-strong);
+}
+.wb-btn:hover { border-color: var(--navy); color: var(--navy); }
+.wb-btn:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.wb-btn--primary { background: var(--navy); border-color: var(--navy); color: var(--card); }
+:root[data-theme="dark"] .wb-btn--primary,
+:root:where(:not([data-theme="light"])) .wb-btn--primary { color: #0e1116; }
+@media (prefers-color-scheme: light) { :root:where(:not([data-theme="dark"])) .wb-btn--primary { color: #fbfbfc; } }
+.wb-btn--primary:hover { background: var(--navy-2); border-color: var(--navy-2); color: inherit; }
+
+/* ---------- tabs ---------- */
+
+.wb-tabs {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin;
+  margin: 28px 0 0; padding: 0 0 1px;
+  background: var(--plane);
+  border-bottom: 1px solid var(--rule);
+}
+.wb-tab {
+  font: inherit; font-size: 13.5px; font-weight: 500; white-space: nowrap;
+  background: none; border: 0; border-bottom: 2px solid transparent;
+  color: var(--muted); padding: 12px 14px; cursor: pointer;
+}
+.wb-tab:hover { color: var(--ink); }
+.wb-tab[aria-selected="true"] { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
+.wb-tab:focus-visible { outline: 2px solid var(--navy); outline-offset: -2px; }
+
+.wb-panel { padding: 30px 0 0; }
+.wb-panel[hidden] { display: none; }
+
+.wb-panel-head { margin: 0 0 20px; }
+.wb-panel-head h2 {
+  font-family: var(--serif); font-size: 25px; font-weight: 600;
+  margin: 0; letter-spacing: -.01em;
+}
+.wb-panel-head p { margin: 6px 0 0; color: var(--ink-2); font-size: 14px; max-width: 68ch; }
+
+/* ---------- statement tables ---------- */
+
+.wb-sheet {
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+  box-shadow: var(--shadow); overflow-x: auto;
+}
+table.wb-stmt {
+  width: 100%; border-collapse: collapse;
+  font-variant-numeric: tabular-nums; font-size: 14px;
+  min-width: 560px;
+}
+table.wb-stmt th, table.wb-stmt td { padding: 5px 14px; text-align: right; }
+table.wb-stmt th:first-child, table.wb-stmt td:first-child { text-align: left; width: 46%; }
+table.wb-stmt thead th {
+  font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600; padding-top: 16px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule-strong);
+}
+tr.wb-r-sec td {
+  font-family: var(--serif); font-size: 15px; font-weight: 600;
+  letter-spacing: .01em; color: var(--navy);
+  padding-top: 20px; padding-bottom: 6px;
+}
+tr.wb-r-grp td {
+  font-size: 12.5px; font-weight: 600; color: var(--ink-2);
+  padding-top: 14px; padding-bottom: 4px;
+}
+tr.wb-r-in td:first-child { padding-left: 28px; color: var(--ink-2); }
+tr.wb-r-in:hover td { background: var(--card-inset); }
+tr.wb-r-calc td { font-weight: 600; }
+tr.wb-r-calc td:first-child { padding-left: 28px; }
+tr.wb-r-calc .wb-cell { border-top: 1px solid var(--rule-strong); }
+tr.wb-r-calc.wb-dbl td:first-child { padding-left: 14px; }
+tr.wb-r-calc.wb-dbl .wb-cell {
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 3px double var(--rule-strong);
+}
+tr.wb-r-gap td { height: 10px; padding: 0; }
+
+.wb-num {
+  font: inherit; font-size: 14px; font-variant-numeric: tabular-nums;
+  text-align: right; width: 100%; max-width: 150px;
+  background: transparent; color: var(--ink);
+  border: 0; border-bottom: 1px dotted var(--rule-strong);
+  padding: 2px 3px; border-radius: 0;
+}
+.wb-num::placeholder { color: var(--muted); opacity: .45; }
+.wb-num:hover { border-bottom-color: var(--navy); }
+.wb-num:focus { outline: 0; border-bottom: 1px solid var(--navy); background: var(--navy-wash); }
+.wb-cell { display: inline-block; min-width: 84px; padding: 2px 3px; }
+.wb-neg { color: var(--neg); }
+
+.wb-note {
+  font-size: 12.5px; color: var(--muted); margin: 10px 2px 0; max-width: 74ch;
+}
+.wb-note code { font-family: var(--mono); font-size: 12px; }
+
+/* ---------- check banner ---------- */
+
+.wb-check {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 14px 0 0; padding: 10px 14px; border-radius: 3px;
+  font-size: 13.5px; border: 1px solid var(--rule);
+  background: var(--card-inset); color: var(--ink-2);
+}
+.wb-check[data-state="ok"]   { background: var(--pos-wash); border-color: color-mix(in srgb, var(--pos) 30%, transparent); color: var(--pos); }
+.wb-check[data-state="bad"]  { background: var(--neg-wash); border-color: color-mix(in srgb, var(--neg) 34%, transparent); color: var(--neg); }
+.wb-check strong { font-weight: 600; }
+.wb-check-mark { font-weight: 700; font-size: 15px; }
+
+/* ---------- ratio cards ---------- */
+
+.wb-group-head {
+  font-family: var(--serif); font-size: 19px; font-weight: 600;
+  margin: 34px 0 4px; padding-bottom: 8px; border-bottom: 1px solid var(--rule);
+}
+.wb-group-head:first-of-type { margin-top: 8px; }
+.wb-group-sub { font-size: 13px; color: var(--muted); margin: 8px 0 0; max-width: 74ch; }
+
+.wb-cards {
+  display: grid; gap: 14px; margin: 18px 0 0;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+}
+.wb-card {
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+  padding: 16px 18px 14px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.wb-card-name {
+  font-size: 13px; font-weight: 650; letter-spacing: .005em; color: var(--ink);
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+}
+.wb-card-name span.wb-unit { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+.wb-work {
+  display: flex; align-items: center; gap: 14px;
+  padding: 4px 0 0; min-height: 58px;
+}
+.wb-frac { flex: 1; min-width: 0; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.wb-frac-row { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; }
+.wb-frac-row .wb-l { color: var(--muted); }
+.wb-frac-row .wb-v { color: var(--ink-2); font-weight: 600; white-space: nowrap; }
+.wb-frac-bar { border-top: 1px solid var(--rule-strong); margin: 1px 0; }
+.wb-frac-op { color: var(--muted); font-weight: 600; text-align: center; padding: 0; line-height: 1; font-size: 12px; }
+.wb-result {
+  font-size: 24px; font-weight: 600; letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+  padding-left: 12px; border-left: 1px solid var(--rule);
+  min-width: 96px; text-align: right; color: var(--navy);
+}
+.wb-result[data-empty="1"] { color: var(--muted); font-weight: 400; }
+.wb-card-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  flex-wrap: wrap; font-size: 12px; color: var(--muted);
+  border-top: 1px solid var(--rule); padding-top: 10px;
+}
+.wb-prior { font-variant-numeric: tabular-nums; }
+.wb-chip {
+  font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 2px;
+  letter-spacing: .02em; display: inline-flex; align-items: center; gap: 5px;
+}
+.wb-chip[data-tone="warn"] { background: var(--warn-wash); color: var(--warn); }
+.wb-chip[data-tone="pos"]  { background: var(--pos-wash);  color: var(--pos); }
+.wb-chip[data-tone="neg"]  { background: var(--neg-wash);  color: var(--neg); }
+.wb-chip[data-tone="flat"] { background: var(--card-inset); color: var(--ink-2); }
+.wb-chip::before { content: attr(data-icon); font-weight: 700; }
+
+/* ---------- trends ---------- */
+
+table.wb-trend {
+  width: 100%; border-collapse: collapse; font-size: 14px;
+  font-variant-numeric: tabular-nums; min-width: 720px;
+}
+table.wb-trend th, table.wb-trend td { padding: 6px 10px; text-align: right; }
+table.wb-trend th:first-child, table.wb-trend td:first-child { text-align: left; width: 190px; }
+table.wb-trend thead th {
+  font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted);
+  font-weight: 600; border-bottom: 1px solid var(--rule-strong); padding-top: 16px;
+}
+table.wb-trend thead th.wb-cagr-h { color: var(--navy); }
+tr.wb-t-metric td:first-child { font-weight: 600; }
+tr.wb-t-metric td { border-top: 1px solid var(--rule); padding-top: 12px; }
+tr.wb-t-yoy td { font-size: 12.5px; color: var(--muted); padding-top: 0; padding-bottom: 12px; }
+tr.wb-t-yoy td:first-child { padding-left: 14px; font-style: italic; }
+td.wb-cagr { font-weight: 700; color: var(--navy); font-size: 15px; border-left: 1px solid var(--rule); }
+tr.wb-t-yoy td.wb-cagr { font-weight: 400; color: var(--muted); font-size: 12px; }
+
+/* ---------- charts ---------- */
+
+.wb-figs { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(430px, 1fr)); }
+@media (max-width: 720px) { .wb-figs { grid-template-columns: 1fr; } }
+.wb-fig {
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+  padding: 18px 18px 14px; box-shadow: var(--shadow); position: relative;
+}
+.wb-fig h3 { font-family: var(--serif); font-size: 17px; font-weight: 600; margin: 0; }
+.wb-fig .wb-fig-sub { font-size: 12.5px; color: var(--muted); margin: 4px 0 0; }
+.wb-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0 4px; font-size: 12px; color: var(--ink-2); }
+.wb-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.wb-swatch { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.wb-plot { position: relative; }
+.wb-plot svg { display: block; width: 100%; height: auto; overflow: visible; }
+.wb-tip {
+  position: absolute; pointer-events: none; opacity: 0; transition: opacity .1s;
+  background: var(--card); border: 1px solid var(--rule-strong); border-radius: 3px;
+  box-shadow: var(--shadow); padding: 8px 10px; font-size: 12px; z-index: 10;
+  min-width: 128px; font-variant-numeric: tabular-nums;
+}
+@media (prefers-reduced-motion: reduce) { .wb-tip { transition: none; } }
+.wb-tip-x { font-weight: 700; margin-bottom: 5px; color: var(--ink); }
+.wb-tip-row { display: flex; align-items: center; gap: 7px; justify-content: space-between; color: var(--ink-2); }
+.wb-tip-row b { font-weight: 600; color: var(--ink); }
+.wb-tip-key { display: inline-flex; align-items: center; gap: 6px; }
+.wb-fig-foot { margin: 10px 0 0; border-top: 1px solid var(--rule); padding-top: 8px; }
+.wb-fig-foot summary {
+  cursor: pointer; font-size: 12px; color: var(--muted); list-style: none;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.wb-fig-foot summary::-webkit-details-marker { display: none; }
+.wb-fig-foot summary::before { content: "▸"; font-size: 10px; }
+.wb-fig-foot[open] summary::before { content: "▾"; }
+.wb-fig-foot summary:hover { color: var(--navy); }
+table.wb-dt { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 10px; font-variant-numeric: tabular-nums; }
+table.wb-dt th, table.wb-dt td { padding: 4px 8px; text-align: right; border-bottom: 1px solid var(--rule); }
+table.wb-dt th:first-child, table.wb-dt td:first-child { text-align: left; }
+table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ---------- misc ---------- */
+
+.wb-empty { color: var(--muted); font-size: 14px; padding: 30px 0; }
+.wb-foot {
+  margin: 56px 0 0; padding: 20px 0 0; border-top: 1px solid var(--rule);
+  font-size: 12.5px; color: var(--muted); max-width: 74ch;
+}
+.wb-toggle-theme { position: fixed; right: 16px; bottom: 16px; z-index: 40; }
+
+@media print {
+  .wb-tabs, .wb-actions, .wb-toggle-theme, .wb-fig-foot { display: none !important; }
+  .wb-panel[hidden] { display: block !important; }
+  .wb-panel { page-break-before: always; }
+  body { background: #fff; font-size: 11px; }
+  .wb-sheet, .wb-card, .wb-fig { box-shadow: none; }
+}
+</style>
+
+<div class="wb-shell">
+
+  <header class="wb-masthead">
+    <p class="wb-eyebrow">Bridge to Business &middot; Financial Statements &amp; Ratio Analysis</p>
+    <h1 class="wb-title">The Financial Statement <em>Workbook</em></h1>
+    <p class="wb-lede">Type the raw figures from any set of statements into the columns below. Every subtotal, ratio, growth rate and chart recalculates as you go — with the arithmetic shown, so you can check the work rather than trust it.</p>
+
+    <div class="wb-setup">
+      <div class="wb-field">
+        <label for="f-company">Company</label>
+        <input id="f-company" type="text" data-meta="company" placeholder="Company name">
+      </div>
+      <div class="wb-field">
+        <label for="f-y0">Fiscal year (current)</label>
+        <input id="f-y0" type="text" data-year="0" placeholder="FY2025">
+      </div>
+      <div class="wb-field">
+        <label for="f-y1">Prior year</label>
+        <input id="f-y1" type="text" data-year="1" placeholder="FY2024">
+      </div>
+      <div class="wb-field">
+        <label for="f-y2">Two years prior</label>
+        <input id="f-y2" type="text" data-year="2" placeholder="FY2023">
+      </div>
+      <div class="wb-field">
+        <label for="f-units">Figures in</label>
+        <select id="f-units" data-meta="units">
+          <option value="1000000">Millions</option>
+          <option value="1000">Thousands</option>
+          <option value="1">Whole dollars</option>
+        </select>
+      </div>
+      <div class="wb-field">
+        <label for="f-shareunits">Share counts in</label>
+        <select id="f-shareunits" data-meta="shareUnits">
+          <option value="1000">Thousands</option>
+          <option value="1000000">Millions</option>
+          <option value="1">Whole shares</option>
+        </select>
+      </div>
+      <div class="wb-field">
+        <label for="f-days">Days in period</label>
+        <input id="f-days" type="text" data-meta="days" inputmode="decimal" placeholder="365">
+      </div>
+    </div>
+
+    <div class="wb-actions">
+      <button class="wb-btn wb-btn--primary" id="btn-demo" type="button">Load Apple FY2025</button>
+      <button class="wb-btn" id="btn-clear" type="button">Clear all</button>
+      <button class="wb-btn" id="btn-save" type="button">Save to file</button>
+      <button class="wb-btn" id="btn-load" type="button">Open file</button>
+      <button class="wb-btn" id="btn-print" type="button">Print / PDF</button>
+      <input type="file" id="file-in" accept="application/json,.json" hidden>
+    </div>
+  </header>
+
+  <nav class="wb-tabs" role="tablist" aria-label="Workbook sections">
+    <button class="wb-tab" role="tab" id="tab-bs"     aria-controls="panel-bs"     aria-selected="true">Balance Sheet</button>
+    <button class="wb-tab" role="tab" id="tab-is"     aria-controls="panel-is"     aria-selected="false" tabindex="-1">Income Statement</button>
+    <button class="wb-tab" role="tab" id="tab-eq"     aria-controls="panel-eq"     aria-selected="false" tabindex="-1">Shareholders&rsquo; Equity</button>
+    <button class="wb-tab" role="tab" id="tab-cf"     aria-controls="panel-cf"     aria-selected="false" tabindex="-1">Cash Flows</button>
+    <button class="wb-tab" role="tab" id="tab-ratios" aria-controls="panel-ratios" aria-selected="false" tabindex="-1">Ratio Worksheet</button>
+    <button class="wb-tab" role="tab" id="tab-trends" aria-controls="panel-trends" aria-selected="false" tabindex="-1">Trends &amp; CAGR</button>
+    <button class="wb-tab" role="tab" id="tab-charts" aria-controls="panel-charts" aria-selected="false" tabindex="-1">Charts</button>
+  </nav>
+
+  <section class="wb-panel" role="tabpanel" id="panel-bs" aria-labelledby="tab-bs">
+    <div class="wb-panel-head">
+      <h2>Classified Balance Sheet</h2>
+      <p>A point-in-time statement: assets on the left of the equation, the claims against them on the right. Two years are required — every turnover ratio needs an average balance.</p>
+    </div>
+    <div class="wb-sheet" id="sheet-bs"></div>
+    <div class="wb-check" id="check-bs" data-state="idle">Enter figures to check the accounting equation.</div>
+    <p class="wb-note">Enter negatives with a leading minus or in parentheses — an accumulated deficit of 14,264 is <code>(14,264)</code> or <code>-14264</code>.</p>
+  </section>
+
+  <section class="wb-panel" role="tabpanel" id="panel-is" aria-labelledby="tab-is" hidden>
+    <div class="wb-panel-head">
+      <h2>Multiple-Step Income Statement</h2>
+      <p>Revenues and expenses over a period, stepped down through gross margin and operating income (EBIT) to net income.</p>
+    </div>
+    <div class="wb-sheet" id="sheet-is"></div>
+    <p class="wb-note">Interest expense and market price are not always broken out on the face of the statement. Fill them where you have them — they unlock times interest earned, return on assets, P/E and dividend yield.</p>
+  </section>
+
+  <section class="wb-panel" role="tabpanel" id="panel-eq" aria-labelledby="tab-eq" hidden>
+    <div class="wb-panel-head">
+      <h2>Statement of Shareholders&rsquo; Equity</h2>
+      <p>A rollforward, not a snapshot: each equity account moves from its beginning balance to its ending balance. Net income adds, dividends and buybacks subtract.</p>
+    </div>
+    <div class="wb-sheet" id="sheet-eq"></div>
+    <div class="wb-check" id="check-eq" data-state="idle">Enter figures to check the equity rollforward.</div>
+  </section>
+
+  <section class="wb-panel" role="tabpanel" id="panel-cf" aria-labelledby="tab-cf" hidden>
+    <div class="wb-panel-head">
+      <h2>Statement of Cash Flows</h2>
+      <p>Operating, investing and financing activities reconciling beginning cash to ending cash. Enter outflows as negatives.</p>
+    </div>
+    <div class="wb-sheet" id="sheet-cf"></div>
+    <div class="wb-check" id="check-cf" data-state="idle">Enter figures to check the cash reconciliation.</div>
+  </section>
+
+  <section class="wb-panel" role="tabpanel" id="panel-ratios" aria-labelledby="tab-ratios" hidden>
+    <div class="wb-panel-head">
+      <h2>Ratio Worksheet</h2>
+      <p>Every measure below shows its numerator and denominator with your actual figures substituted in, laid out the way the worksheet does. The prior-year column fills in wherever the data supports it.</p>
+    </div>
+    <div id="ratios-out"></div>
+  </section>
+
+  <section class="wb-panel" role="tabpanel" id="panel-trends" aria-labelledby="tab-trends" hidden>
+    <div class="wb-panel-head">
+      <h2>Trends &amp; Compound Annual Growth</h2>
+      <p>Six years of any metric. Year-over-year growth appears under each row; the compound annual growth rate is computed across the full span.</p>
+    </div>
+    <div class="wb-sheet" style="padding: 0 6px 18px;"><table class="wb-trend" id="trend-table"></table></div>
+    <p class="wb-note"><strong>CAGR = (Ending &divide; Beginning)<sup>1/n</sup> &minus; 1</strong>, where <em>n</em> is the number of intervals between the first and last year entered — five intervals across six years, not six.</p>
+  </section>
+
+  <section class="wb-panel" role="tabpanel" id="panel-charts" aria-labelledby="tab-charts" hidden>
+    <div class="wb-panel-head">
+      <h2>Charts</h2>
+      <p>Drawn from the figures you entered. Hover any chart for exact values; open the table beneath it for the underlying numbers.</p>
+    </div>
+    <div class="wb-figs" id="figs"></div>
+  </section>
+
+  <p class="wb-foot">Built for the Bridge to Business accounting session. Figures you enter stay in this browser — nothing is uploaded. The Apple demo data is the FY2023&ndash;FY2025 consolidated statements used in the course materials.</p>
+
+</div>
+
+<button class="wb-btn wb-toggle-theme" id="btn-theme" type="button" aria-label="Toggle light and dark theme">Theme</button>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =========================================================
+     1. Schemas — the statements, as data
+     ========================================================= */
+
+  function sum(g, ids) {
+    var any = false, t = 0;
+    for (var i = 0; i < ids.length; i++) {
+      var v = g(ids[i]);
+      if (v != null) { any = true; t += v; }
+    }
+    return any ? t : null;
+  }
+  function diff(a, b) { return (a == null && b == null) ? null : (a || 0) - (b || 0); }
+
+  var SCHEMAS = {
+    bs: [
+      { k: 'sec', l: 'Assets' },
+      { k: 'grp', l: 'Current assets' },
+      { k: 'in', id: 'cash',        l: 'Cash and cash equivalents' },
+      { k: 'in', id: 'mktSecCur',   l: 'Marketable securities' },
+      { k: 'in', id: 'ar',          l: 'Accounts receivable, net' },
+      { k: 'in', id: 'vendorAr',    l: 'Vendor non-trade receivables' },
+      { k: 'in', id: 'inv',         l: 'Inventories' },
+      { k: 'in', id: 'otherCa',     l: 'Other current assets' },
+      { k: 'calc', id: 'tca', l: 'Total current assets', f: function (g) { return sum(g, ['cash','mktSecCur','ar','vendorAr','inv','otherCa']); } },
+      { k: 'gap' },
+      { k: 'grp', l: 'Non-current assets' },
+      { k: 'in', id: 'mktSecLt',    l: 'Marketable securities' },
+      { k: 'in', id: 'ppe',         l: 'Property, plant and equipment, net' },
+      { k: 'in', id: 'otherNca',    l: 'Other non-current assets' },
+      { k: 'calc', id: 'tnca', l: 'Total non-current assets', f: function (g) { return sum(g, ['mktSecLt','ppe','otherNca']); } },
+      { k: 'calc', id: 'ta', l: 'Total assets', dbl: true, f: function (g) { return sum(g, ['tca','tnca']); } },
+      { k: 'gap' },
+      { k: 'sec', l: 'Liabilities and shareholders’ equity' },
+      { k: 'grp', l: 'Current liabilities' },
+      { k: 'in', id: 'ap',          l: 'Accounts payable' },
+      { k: 'in', id: 'otherCl',     l: 'Other current liabilities' },
+      { k: 'in', id: 'defRev',      l: 'Deferred revenue' },
+      { k: 'in', id: 'commPaper',   l: 'Commercial paper' },
+      { k: 'in', id: 'termDebtCur', l: 'Term debt' },
+      { k: 'calc', id: 'tcl', l: 'Total current liabilities', f: function (g) { return sum(g, ['ap','otherCl','defRev','commPaper','termDebtCur']); } },
+      { k: 'gap' },
+      { k: 'grp', l: 'Non-current liabilities' },
+      { k: 'in', id: 'termDebtLt',  l: 'Term debt' },
+      { k: 'in', id: 'otherNcl',    l: 'Other non-current liabilities' },
+      { k: 'calc', id: 'tncl', l: 'Total non-current liabilities', f: function (g) { return sum(g, ['termDebtLt','otherNcl']); } },
+      { k: 'calc', id: 'tl', l: 'Total liabilities', f: function (g) { return sum(g, ['tcl','tncl']); } },
+      { k: 'gap' },
+      { k: 'grp', l: 'Shareholders’ equity' },
+      { k: 'in', id: 'cs',   l: 'Common stock and additional paid-in capital' },
+      { k: 'in', id: 're',   l: 'Retained earnings / (accumulated deficit)' },
+      { k: 'in', id: 'aoci', l: 'Accumulated other comprehensive income / (loss)' },
+      { k: 'calc', id: 'te', l: 'Total shareholders’ equity', f: function (g) { return sum(g, ['cs','re','aoci']); } },
+      { k: 'calc', id: 'tle', l: 'Total liabilities and shareholders’ equity', dbl: true, f: function (g) { return sum(g, ['tl','te']); } }
+    ],
+
+    is: [
+      { k: 'grp', l: 'Net sales' },
+      { k: 'in', id: 'salesProd', l: 'Products' },
+      { k: 'in', id: 'salesServ', l: 'Services' },
+      { k: 'calc', id: 'netSales', l: 'Total net sales', f: function (g) { return sum(g, ['salesProd','salesServ']); } },
+      { k: 'gap' },
+      { k: 'grp', l: 'Cost of sales' },
+      { k: 'in', id: 'cosProd', l: 'Products' },
+      { k: 'in', id: 'cosServ', l: 'Services' },
+      { k: 'calc', id: 'totalCos', l: 'Total cost of sales', f: function (g) { return sum(g, ['cosProd','cosServ']); } },
+      { k: 'calc', id: 'gross', l: 'Gross margin', f: function (g) { return (g('netSales') == null && g('totalCos') == null) ? null : diff(g('netSales'), g('totalCos')); } },
+      { k: 'gap' },
+      { k: 'grp', l: 'Operating expenses' },
+      { k: 'in', id: 'rd',  l: 'Research and development' },
+      { k: 'in', id: 'sga', l: 'Selling, general and administrative' },
+      { k: 'calc', id: 'opex', l: 'Total operating expenses', f: function (g) { return sum(g, ['rd','sga']); } },
+      { k: 'gap' },
+      { k: 'calc', id: 'ebit', l: 'Operating income (EBIT)', f: function (g) { return (g('gross') == null && g('opex') == null) ? null : diff(g('gross'), g('opex')); } },
+      { k: 'in', id: 'otherInc', l: 'Other income / (expense), net' },
+      { k: 'calc', id: 'pretax', l: 'Income before provision for income taxes', f: function (g) { return sum(g, ['ebit','otherInc']); } },
+      { k: 'in', id: 'tax', l: 'Provision for income taxes' },
+      { k: 'calc', id: 'ni', l: 'Net income', dbl: true, f: function (g) { return (g('pretax') == null && g('tax') == null) ? null : diff(g('pretax'), g('tax')); } },
+      { k: 'gap' },
+      { k: 'grp', l: 'Per share data' },
+      { k: 'in', id: 'epsBasic',   l: 'Earnings per share — basic', dec: 2 },
+      { k: 'in', id: 'epsDiluted', l: 'Earnings per share — diluted', dec: 2 },
+      { k: 'in', id: 'shBasic',    l: 'Shares used in computing EPS — basic' },
+      { k: 'in', id: 'shDiluted',  l: 'Shares used in computing EPS — diluted' },
+      { k: 'gap' },
+      { k: 'grp', l: 'Supplemental inputs for ratios' },
+      { k: 'in', id: 'intExp',   l: 'Interest expense' },
+      { k: 'in', id: 'mktPrice', l: 'Market price per common share', dec: 2 },
+      { k: 'in', id: 'dpsDecl',  l: 'Dividends declared per share', dec: 2 }
+    ],
+
+    eq: [
+      { k: 'in', id: 'eqBegin', l: 'Total shareholders’ equity, beginning balances' },
+      { k: 'gap' },
+      { k: 'grp', l: 'Common stock and additional paid-in capital' },
+      { k: 'in', id: 'csBegin',    l: 'Beginning balances' },
+      { k: 'in', id: 'csIssued',   l: 'Common stock issued' },
+      { k: 'in', id: 'csWithheld', l: 'Common stock withheld — net share settlement' },
+      { k: 'in', id: 'csSbc',      l: 'Share-based compensation' },
+      { k: 'calc', id: 'csEnd', l: 'Ending balances', f: function (g) { return sum(g, ['csBegin','csIssued','csWithheld','csSbc']); } },
+      { k: 'gap' },
+      { k: 'grp', l: 'Retained earnings / (accumulated deficit)' },
+      { k: 'in', id: 'reBegin',    l: 'Beginning balances' },
+      { k: 'in', id: 'reNi',       l: 'Net income' },
+      { k: 'in', id: 'reDiv',      l: 'Dividends and dividend equivalents declared' },
+      { k: 'in', id: 'reWithheld', l: 'Common stock withheld — net share settlement' },
+      { k: 'in', id: 'reRepurch',  l: 'Common stock repurchased' },
+      { k: 'calc', id: 'reEnd', l: 'Ending balances', f: function (g) { return sum(g, ['reBegin','reNi','reDiv','reWithheld','reRepurch']); } },
+      { k: 'gap' },
+      { k: 'grp', l: 'Accumulated other comprehensive income / (loss)' },
+      { k: 'in', id: 'aociBegin', l: 'Beginning balances' },
+      { k: 'in', id: 'aociOci',   l: 'Other comprehensive income / (loss)' },
+      { k: 'calc', id: 'aociEnd', l: 'Ending balances', f: function (g) { return sum(g, ['aociBegin','aociOci']); } },
+      { k: 'gap' },
+      { k: 'calc', id: 'eqEnd', l: 'Total shareholders’ equity, ending balances', dbl: true, f: function (g) { return sum(g, ['csEnd','reEnd','aociEnd']); } },
+      { k: 'in', id: 'dpsEq', l: 'Dividends declared per share or RSU', dec: 2 }
+    ],
+
+    cf: [
+      { k: 'in', id: 'cashBegin', l: 'Cash and equivalents, beginning balances' },
+      { k: 'gap' },
+      { k: 'grp', l: 'Operating activities' },
+      { k: 'in', id: 'cfNi',     l: 'Net income' },
+      { k: 'in', id: 'da',       l: 'Depreciation and amortization' },
+      { k: 'in', id: 'sbc',      l: 'Share-based compensation expense' },
+      { k: 'in', id: 'otherAdj', l: 'Other adjustments' },
+      { k: 'grp', l: 'Changes in operating assets and liabilities' },
+      { k: 'in', id: 'dAr',          l: 'Accounts receivable, net' },
+      { k: 'in', id: 'dVendor',      l: 'Vendor non-trade receivables' },
+      { k: 'in', id: 'dInv',         l: 'Inventories' },
+      { k: 'in', id: 'dOtherAssets', l: 'Other current and non-current assets' },
+      { k: 'in', id: 'dAp',          l: 'Accounts payable' },
+      { k: 'in', id: 'dOtherLiab',   l: 'Other current and non-current liabilities' },
+      { k: 'calc', id: 'cfo', l: 'Cash generated by operating activities', f: function (g) { return sum(g, ['cfNi','da','sbc','otherAdj','dAr','dVendor','dInv','dOtherAssets','dAp','dOtherLiab']); } },
+      { k: 'gap' },
+      { k: 'grp', l: 'Investing activities' },
+      { k: 'in', id: 'purchSec', l: 'Purchases of marketable securities' },
+      { k: 'in', id: 'matSec',   l: 'Proceeds from maturities of marketable securities' },
+      { k: 'in', id: 'saleSec',  l: 'Proceeds from sales of marketable securities' },
+      { k: 'in', id: 'capex',    l: 'Payments for acquisition of property, plant and equipment' },
+      { k: 'in', id: 'otherInv', l: 'Other' },
+      { k: 'calc', id: 'cfi', l: 'Cash generated by / (used in) investing activities', f: function (g) { return sum(g, ['purchSec','matSec','saleSec','capex','otherInv']); } },
+      { k: 'gap' },
+      { k: 'grp', l: 'Financing activities' },
+      { k: 'in', id: 'taxShare',     l: 'Payments for taxes related to net share settlement' },
+      { k: 'in', id: 'divPaid',      l: 'Payments for dividends and dividend equivalents' },
+      { k: 'in', id: 'repurch',      l: 'Repurchases of common stock' },
+      { k: 'in', id: 'issueDebt',    l: 'Proceeds from issuance of term debt, net' },
+      { k: 'in', id: 'repayDebt',    l: 'Repayments of term debt' },
+      { k: 'in', id: 'commPaperNet', l: 'Proceeds from / (repayments of) commercial paper, net' },
+      { k: 'in', id: 'otherFin',     l: 'Other' },
+      { k: 'calc', id: 'cff', l: 'Cash generated by / (used in) financing activities', f: function (g) { return sum(g, ['taxShare','divPaid','repurch','issueDebt','repayDebt','commPaperNet','otherFin']); } },
+      { k: 'gap' },
+      { k: 'calc', id: 'netChange', l: 'Increase / (decrease) in cash', f: function (g) { return sum(g, ['cfo','cfi','cff']); } },
+      { k: 'calc', id: 'cashEnd', l: 'Cash and equivalents, ending balances', dbl: true, f: function (g) { return sum(g, ['cashBegin','netChange']); } }
+    ]
+  };
+
+  var YEARS = { bs: 2, is: 3, eq: 3, cf: 3 };
+  var TREND_METRICS = [
+    { id: 'sales', l: 'Net sales' },
+    { id: 'ni',    l: 'Net income' },
+    { id: 'cfo',   l: 'Operating cash flow' },
+    { id: 'x1',    l: 'Custom metric 1' },
+    { id: 'x2',    l: 'Custom metric 2' }
+  ];
+
+  /* =========================================================
+     2. State
+     ========================================================= */
+
+  var STORE_KEY = 'fsWorkbook.v1';
+
+  function blank() {
+    return {
+      meta: { company: '', units: '1000000', shareUnits: '1000', days: '365',
+              years: ['', '', ''], trendYears: ['', '', '', '', '', ''] },
+      bs: {}, is: {}, eq: {}, cf: {}, trend: {}, trendLabels: {}
+    };
+  }
+  var state = blank();
+
+  function raw(stmt, id, y) {
+    var row = state[stmt][id];
+    return row ? (row[y] == null ? '' : row[y]) : '';
+  }
+  function setRaw(stmt, id, y, v) {
+    if (!state[stmt][id]) state[stmt][id] = [];
+    state[stmt][id][y] = v;
+  }
+
+  /* =========================================================
+     3. Number parsing & formatting
+     ========================================================= */
+
+  function parseNum(s) {
+    if (s == null) return null;
+    s = String(s).trim();
+    if (!s) return null;
+    var neg = false;
+    if (/^\(.*\)$/.test(s)) { neg = true; s = s.slice(1, -1); }
+    s = s.replace(/[$,\s  ]/g, '');
+    if (s === '' || s === '—' || s === '-' || s === '–') return null;
+    if (s.charAt(0) === '-') { neg = !neg; s = s.slice(1); }
+    var v = parseFloat(s);
+    if (!isFinite(v)) return null;
+    return neg ? -v : v;
+  }
+
+  function fmt(v, dec) {
+    if (v == null || !isFinite(v)) return '—';
+    dec = dec || 0;
+    var n = Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    return v < 0 ? '(' + n + ')' : n;
+  }
+  function fmtSigned(v, dec) {
+    if (v == null || !isFinite(v)) return '—';
+    dec = dec == null ? 1 : dec;
+    var n = Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    return (v < 0 ? '−' : '+') + n;
+  }
+  function fmtPct(v, dec) { return v == null || !isFinite(v) ? '—' : (v * 100).toFixed(dec == null ? 1 : dec) + '%'; }
+  function fmtX(v)   { return v == null || !isFinite(v) ? '—' : v.toFixed(2) + '×'; }
+  function fmtDays(v) { return v == null || !isFinite(v) ? '—' : v.toFixed(1); }
+  function fmtMoneyPS(v) { return v == null || !isFinite(v) ? '—' : '$' + v.toFixed(2); }
+
+  function meta(key) { return state.meta[key]; }
+  function unitScale() { return parseFloat(meta('units')) || 1; }
+  function shareScale() { return parseFloat(meta('shareUnits')) || 1; }
+  function daysInPeriod() { var d = parseNum(meta('days')); return d && d > 0 ? d : 365; }
+  function yearLabel(y) { return meta('years')[y] || ('Year ' + (y + 1)); }
+  function unitsWord() {
+    var u = unitScale();
+    return u === 1000000 ? 'in millions' : u === 1000 ? 'in thousands' : 'whole dollars';
+  }
+
+  /* =========================================================
+     4. Computation
+     ========================================================= */
+
+  var C = { bs: [], is: [], eq: [], cf: [] };
+
+  function computeAll() {
+    Object.keys(SCHEMAS).forEach(function (stmt) {
+      C[stmt] = [];
+      for (var y = 0; y < YEARS[stmt]; y++) {
+        var map = {};
+        var g = function (id) { return map[id] === undefined ? null : map[id]; };
+        SCHEMAS[stmt].forEach(function (r) {
+          if (r.k === 'in') map[r.id] = parseNum(raw(stmt, r.id, y));
+          else if (r.k === 'calc') map[r.id] = r.f(g);
+        });
+        C[stmt].push(map);
+      }
+    });
+  }
+
+  function V(stmt, id, y) {
+    var m = C[stmt][y];
+    return m && m[id] !== undefined ? m[id] : null;
+  }
+  function avg(stmt, id, y) {
+    var a = V(stmt, id, y), b = V(stmt, id, y + 1);
+    if (a == null || b == null) return null;
+    return (a + b) / 2;
+  }
+
+  /* derived cash metrics ------------------------------------ */
+  function ebit(y)   { return V('is', 'ebit', y); }
+  function ebitda(y) {
+    var e = ebit(y), d = V('cf', 'da', y);
+    if (e == null && d == null) return null;
+    return (e || 0) + (d || 0);
+  }
+  function fcfCourse(y) {           /* operating cash flow less capital expenditures */
+    var o = V('cf', 'cfo', y), c = V('cf', 'capex', y);
+    if (o == null || c == null) return null;
+    return o + (c > 0 ? -c : c);    /* capex may be entered positive or negative */
+  }
+  function fcfEbitda(y) {           /* EBITDA +/- working capital swings, less capex */
+    var e = ebitda(y);
+    if (e == null) return null;
+    var c = V('cf', 'capex', y);
+    var wc = 0, seen = false;
+    ['dInv', 'dAr', 'dAp'].forEach(function (id) {
+      var v = V('cf', id, y);
+      if (v != null) { wc += v; seen = true; }
+    });
+    if (!seen && c == null) return null;
+    return e + wc + (c == null ? 0 : (c > 0 ? -c : c));
+  }
+
+  /* =========================================================
+     5. Ratio definitions
+     Each returns { parts: [{l, v, sign}], op: 'div' | 'sum', v }
+     ========================================================= */
+
+  function d(l, v) { return { l: l, v: v }; }
+  function divide(n, dn) { return (n == null || dn == null || dn === 0) ? null : n / dn; }
+
+  var RATIOS = [
+    /* ---- liquidity & efficiency ---- */
+    { g: 'liq', name: 'Working Capital', unit: 'money', calc: function (y) {
+        var ca = V('bs', 'tca', y), cl = V('bs', 'tcl', y);
+        return { op: 'sum', parts: [d('Current Assets', ca), d('Current Liabilities', cl)], signs: ['+', '−'],
+                 v: (ca == null || cl == null) ? null : ca - cl };
+      },
+      flag: function (v) { return v != null && v < 0 ? { tone: 'warn', icon: '!', text: 'Negative' } : null; } },
+
+    { g: 'liq', name: 'Current Ratio', unit: 'x', calc: function (y) {
+        var ca = V('bs', 'tca', y), cl = V('bs', 'tcl', y);
+        return { op: 'div', parts: [d('Current Assets', ca), d('Current Liabilities', cl)], v: divide(ca, cl) };
+      },
+      flag: function (v) { return v == null ? null : v < 1 ? { tone: 'warn', icon: '!', text: 'Below 1.00' } : { tone: 'pos', icon: '✓', text: 'At or above 1.00' }; } },
+
+    { g: 'liq', name: 'Quick Ratio', unit: 'x', dir: 1, calc: function (y) {
+        var cash = V('bs', 'cash', y), ar = V('bs', 'ar', y), cl = V('bs', 'tcl', y);
+        var n = (cash == null && ar == null) ? null : (cash || 0) + (ar || 0);
+        return { op: 'div', parts: [d('Cash + Accounts Receivable', n), d('Current Liabilities', cl)], v: divide(n, cl) };
+      },
+      note: 'Worksheet definition: cash plus receivables only. Marketable securities are excluded.' },
+
+    { g: 'liq', name: 'Accounts Receivable Turnover', unit: 'x', dir: 1, calc: function (y) {
+        var s = V('is', 'netSales', y), a = avg('bs', 'ar', y);
+        return { op: 'div', parts: [d('Net Sales', s), d('Average Accounts Receivable', a)], v: divide(s, a) };
+      },
+      note: 'Average balance needs two balance sheet dates.' },
+
+    { g: 'liq', name: 'Days Sales in Receivables (DSO)', unit: 'days', dir: -1, calc: function (y) {
+        var t = divide(V('is', 'netSales', y), avg('bs', 'ar', y)), dp = daysInPeriod();
+        return { op: 'div', parts: [d('Days in Period', dp), d('Accounts Receivable Turnover', t)], v: divide(dp, t), dec: [0, 2] };
+      } },
+
+    { g: 'liq', name: 'Inventory Turnover', unit: 'x', dir: 1, calc: function (y) {
+        var c = V('is', 'totalCos', y), a = avg('bs', 'inv', y);
+        return { op: 'div', parts: [d('Cost of Sales', c), d('Average Inventory', a)], v: divide(c, a) };
+      } },
+
+    { g: 'liq', name: 'Days Sales in Inventory (DIO)', unit: 'days', dir: -1, calc: function (y) {
+        var t = divide(V('is', 'totalCos', y), avg('bs', 'inv', y)), dp = daysInPeriod();
+        return { op: 'div', parts: [d('Days in Period', dp), d('Inventory Turnover', t)], v: divide(dp, t), dec: [0, 2] };
+      } },
+
+    { g: 'liq', name: 'Accounts Payable Turnover', unit: 'x', dir: 0, calc: function (y) {
+        var c = V('is', 'totalCos', y), a = avg('bs', 'ap', y);
+        return { op: 'div', parts: [d('Cost of Sales', c), d('Average Accounts Payable', a)], v: divide(c, a) };
+      } },
+
+    { g: 'liq', name: 'Days Payable Outstanding (DPO)', unit: 'days', dir: 1, calc: function (y) {
+        var t = divide(V('is', 'totalCos', y), avg('bs', 'ap', y)), dp = daysInPeriod();
+        return { op: 'div', parts: [d('Days in Period', dp), d('Accounts Payable Turnover', t)], v: divide(dp, t), dec: [0, 2] };
+      } },
+
+    { g: 'liq', name: 'Cash to Cash Operating Cycle', unit: 'days', dir: -1, calc: function (y) {
+        var dp = daysInPeriod();
+        var dio = divide(dp, divide(V('is', 'totalCos', y), avg('bs', 'inv', y)));
+        var dpo = divide(dp, divide(V('is', 'totalCos', y), avg('bs', 'ap', y)));
+        var dso = divide(dp, divide(V('is', 'netSales', y), avg('bs', 'ar', y)));
+        var v = (dio == null || dpo == null || dso == null) ? null : dio - dpo + dso;
+        return { op: 'sum', signs: ['+', '−', '+'],
+                 parts: [d('Days Sales in Inventory', dio), d('Days Payable Outstanding', dpo), d('Days Sales in Receivables', dso)],
+                 v: v, dec: [1, 1, 1] };
+      },
+      flag: function (v) { return v != null && v < 0 ? { tone: 'pos', icon: '✓', text: 'Negative cycle — suppliers fund operations' } : null; } },
+
+    /* ---- profitability & leverage ---- */
+    { g: 'prof', name: 'EBITDA Percent to Sales', unit: 'pct', dir: 1, calc: function (y) {
+        var e = ebitda(y), s = V('is', 'netSales', y);
+        return { op: 'div', parts: [d('EBITDA', e), d('Net Sales', s)], v: divide(e, s) };
+      } },
+
+    { g: 'prof', name: 'Debt-to-Equity Ratio', unit: 'x', dir: -1, calc: function (y) {
+        var l = V('bs', 'tl', y), e = V('bs', 'te', y);
+        return { op: 'div', parts: [d('Total Liabilities', l), d('Total Shareholders’ Equity', e)], v: divide(l, e) };
+      },
+      flag: function (v) { return v != null && v > 2 ? { tone: 'warn', icon: '!', text: 'Heavily levered' } : null; } },
+
+    { g: 'prof', name: 'Gross Profit Ratio', unit: 'pct', dir: 1, calc: function (y) {
+        var gp = V('is', 'gross', y), s = V('is', 'netSales', y);
+        return { op: 'div', parts: [d('Gross Profit', gp), d('Net Sales', s)], v: divide(gp, s) };
+      } },
+
+    { g: 'prof', name: 'Profit Margin Before Tax', unit: 'pct', dir: 1, calc: function (y) {
+        var p = V('is', 'pretax', y), s = V('is', 'netSales', y);
+        return { op: 'div', parts: [d('Income Before Tax', p), d('Net Sales', s)], v: divide(p, s) };
+      } },
+
+    { g: 'prof', name: 'Profit Margin', unit: 'pct', dir: 1, calc: function (y) {
+        var n = V('is', 'ni', y), s = V('is', 'netSales', y);
+        return { op: 'div', parts: [d('After Tax Net Income', n), d('Net Sales', s)], v: divide(n, s) };
+      } },
+
+    /* ---- textbook summary measures ---- */
+    { g: 'text', name: 'Asset Turnover', unit: 'x', dir: 1, calc: function (y) {
+        var s = V('is', 'netSales', y);
+        var a0 = V('bs', 'ta', y), a1 = V('bs', 'ta', y + 1);
+        var i0 = V('bs', 'mktSecLt', y) || 0, i1 = V('bs', 'mktSecLt', y + 1) || 0;
+        var a = (a0 == null || a1 == null) ? null : ((a0 - i0) + (a1 - i1)) / 2;
+        return { op: 'div', parts: [d('Sales', s), d('Avg Total Assets (excl. LT investments)', a)], v: divide(s, a) };
+      },
+      note: 'The textbook excludes long-term investments; long-term marketable securities are netted out here.' },
+
+    { g: 'text', name: 'Return on Total Assets', unit: 'pct', dir: 1, calc: function (y) {
+        var n = V('is', 'ni', y), i = V('is', 'intExp', y) || 0;
+        var num = n == null ? null : n + i;
+        var a = avg('bs', 'ta', y);
+        return { op: 'div', parts: [d('Net Income + Interest Expense', num), d('Average Total Assets', a)], v: divide(num, a) };
+      } },
+
+    { g: 'text', name: 'Return on Stockholders’ Equity', unit: 'pct', dir: 1, calc: function (y) {
+        var n = V('is', 'ni', y), e = avg('bs', 'te', y);
+        return { op: 'div', parts: [d('Net Income', n), d('Average Total Stockholders’ Equity', e)], v: divide(n, e) };
+      } },
+
+    { g: 'text', name: 'Earnings per Share — Basic', unit: 'ps', dir: 1, calc: function (y) {
+        var n = V('is', 'ni', y), sh = V('is', 'shBasic', y);
+        var v = (n == null || sh == null || sh === 0) ? null : (n * unitScale()) / (sh * shareScale());
+        return { op: 'div', parts: [d('Net Income − Preferred Dividends', n), d('Shares of Common Stock Outstanding', sh)], v: v, dec: [0, 0] };
+      },
+      note: 'Computed from net income and share count — compare against the reported EPS on the income statement.' },
+
+    { g: 'text', name: 'Price-Earnings (P/E) Ratio', unit: 'x', dir: 0, calc: function (y) {
+        var p = V('is', 'mktPrice', y), e = V('is', 'epsDiluted', y);
+        if (e == null) e = V('is', 'epsBasic', y);
+        return { op: 'div', parts: [d('Market Price per Share', p), d('Earnings per Share', e)], v: divide(p, e), dec: [2, 2] };
+      },
+      note: 'Needs a market price — enter it on the income statement tab.' },
+
+    { g: 'text', name: 'Dividends per Share', unit: 'ps', dir: 1, calc: function (y) {
+        var dv = V('cf', 'divPaid', y), sh = V('is', 'shBasic', y);
+        var num = dv == null ? null : Math.abs(dv);
+        var v = (num == null || sh == null || sh === 0) ? null : (num * unitScale()) / (sh * shareScale());
+        return { op: 'div', parts: [d('Dividends on Common Stock', num), d('Shares of Common Stock Outstanding', sh)], v: v, dec: [0, 0] };
+      },
+      note: 'Dividends actually paid, from the cash flow statement.' },
+
+    { g: 'text', name: 'Dividend Yield', unit: 'pct', dir: 1, calc: function (y) {
+        var dps = V('is', 'dpsDecl', y);
+        if (dps == null) dps = V('eq', 'dpsEq', y);
+        var p = V('is', 'mktPrice', y);
+        return { op: 'div', parts: [d('Dividends per Share', dps), d('Market Price per Share', p)], v: divide(dps, p), dec: [2, 2] };
+      } },
+
+    { g: 'text', name: 'Times Interest Earned', unit: 'x', dir: 1, calc: function (y) {
+        var p = V('is', 'pretax', y), i = V('is', 'intExp', y);
+        var num = (p == null || i == null) ? null : p + i;
+        return { op: 'div', parts: [d('Income Before Income Tax + Interest Expense', num), d('Interest Expense', i)], v: divide(num, i) };
+      },
+      note: 'Needs interest expense broken out separately.' },
+
+    { g: 'text', name: 'Fixed Assets to Long-Term Liabilities', unit: 'x', dir: 1, calc: function (y) {
+        var fa = V('bs', 'ppe', y), ll = V('bs', 'tncl', y);
+        return { op: 'div', parts: [d('Fixed Assets (net)', fa), d('Long-Term Liabilities', ll)], v: divide(fa, ll) };
+      } }
+  ];
+
+  var CASH_METRICS = [
+    { name: 'EBIT', unit: 'money', desc: 'Operating income — profit before interest and taxes.', calc: ebit },
+    { name: 'EBITDA', unit: 'money', desc: 'EBIT plus depreciation and amortization — a cash-flow proxy used to value and compare companies.', calc: ebitda },
+    { name: 'EBITDA Margin', unit: 'pct', desc: 'EBITDA as a percentage of net sales.', calc: function (y) { return divide(ebitda(y), V('is', 'netSales', y)); } },
+    { name: 'Free Cash Flow', unit: 'money', desc: 'Operating cash flow less capital expenditures — the definition used in the worked class solution.', calc: fcfCourse },
+    { name: 'Free Cash Flow (EBITDA basis)', unit: 'money', desc: 'EBITDA, plus or minus the swings in inventory, receivables and payables, less capital expenditures — the definition given on the Free Cash Flow slide.', calc: fcfEbitda }
+  ];
+
+  /* =========================================================
+     6. Rendering — statements
+     ========================================================= */
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  function buildSheet(stmt, mount) {
+    var n = YEARS[stmt];
+    var table = el('table', 'wb-stmt');
+    var thead = el('thead'), htr = el('tr');
+    htr.appendChild(el('th', null, ''));
+    for (var y = 0; y < n; y++) {
+      var th = el('th', null, yearLabel(y));
+      th.setAttribute('data-yearhead', String(y));
+      th.scope = 'col';
+      htr.appendChild(th);
+    }
+    thead.appendChild(htr); table.appendChild(thead);
+
+    var tb = el('tbody');
+    SCHEMAS[stmt].forEach(function (r) {
+      var tr = el('tr');
+      if (r.k === 'gap') {
+        tr.className = 'wb-r-gap';
+        var td = el('td'); td.colSpan = n + 1; tr.appendChild(td);
+        tb.appendChild(tr); return;
+      }
+      if (r.k === 'sec' || r.k === 'grp') {
+        tr.className = r.k === 'sec' ? 'wb-r-sec' : 'wb-r-grp';
+        var tdl = el('td', null, r.l); tdl.colSpan = n + 1;
+        tr.appendChild(tdl); tb.appendChild(tr); return;
+      }
+      tr.className = r.k === 'in' ? 'wb-r-in' : 'wb-r-calc' + (r.dbl ? ' wb-dbl' : '');
+      tr.appendChild(el('td', null, r.l));
+      for (var y2 = 0; y2 < n; y2++) {
+        var td2 = el('td');
+        if (r.k === 'in') {
+          var inp = el('input', 'wb-num');
+          inp.type = 'text';
+          inp.inputMode = 'decimal';
+          inp.setAttribute('aria-label', r.l + ', ' + yearLabel(y2));
+          inp.setAttribute('data-in', stmt + '|' + r.id + '|' + y2);
+          inp.setAttribute('data-dec', String(r.dec || 0));
+          inp.placeholder = '—';
+          td2.appendChild(inp);
+        } else {
+          var sp = el('span', 'wb-cell');
+          sp.setAttribute('data-cell', stmt + '|' + r.id + '|' + y2);
+          sp.setAttribute('data-dec', String(r.dec || 0));
+          sp.textContent = '—';
+          td2.appendChild(sp);
+        }
+        tr.appendChild(td2);
+      }
+      tb.appendChild(tr);
+    });
+    table.appendChild(tb);
+    mount.innerHTML = '';
+    mount.appendChild(table);
+  }
+
+  function refreshCells() {
+    document.querySelectorAll('[data-cell]').forEach(function (sp) {
+      var p = sp.getAttribute('data-cell').split('|');
+      var v = V(p[0], p[1], parseInt(p[2], 10));
+      var dec = parseInt(sp.getAttribute('data-dec'), 10) || 0;
+      sp.textContent = fmt(v, dec);
+      sp.classList.toggle('wb-neg', v != null && v < 0);
+    });
+    document.querySelectorAll('[data-yearhead]').forEach(function (th) {
+      th.textContent = yearLabel(parseInt(th.getAttribute('data-yearhead'), 10));
+    });
+  }
+
+  /* ---- reconciliation checks ---- */
+
+  function setCheck(node, state_, html) {
+    node.setAttribute('data-state', state_);
+    node.innerHTML = html;
+  }
+  function near(a, b) { return Math.abs(a - b) < 0.5; }
+
+  function refreshChecks() {
+    /* balance sheet: A = L + E */
+    var n = document.getElementById('check-bs');
+    var ta = V('bs', 'ta', 0), tle = V('bs', 'tle', 0);
+    if (ta == null || tle == null) {
+      setCheck(n, 'idle', 'Enter figures to check the accounting equation.');
+    } else if (near(ta, tle)) {
+      setCheck(n, 'ok', '<span class="wb-check-mark">✓</span> <strong>' + yearLabel(0) + ' balances.</strong> Assets ' + fmt(ta) + ' = Liabilities + Equity ' + fmt(tle) + '.');
+    } else {
+      setCheck(n, 'bad', '<span class="wb-check-mark">✗</span> <strong>Out of balance by ' + fmt(Math.abs(ta - tle)) + '.</strong> Assets ' + fmt(ta) + ' vs. Liabilities + Equity ' + fmt(tle) + '.');
+    }
+
+    /* equity rollforward: beginning + movement = ending */
+    var e = document.getElementById('check-eq');
+    var beg = V('eq', 'eqBegin', 0), end = V('eq', 'eqEnd', 0), bsEq = V('bs', 'te', 0);
+    if (end == null) {
+      setCheck(e, 'idle', 'Enter figures to check the equity rollforward.');
+    } else if (bsEq != null && !near(end, bsEq)) {
+      setCheck(e, 'bad', '<span class="wb-check-mark">✗</span> <strong>Ending equity ' + fmt(end) + ' does not tie to the balance sheet (' + fmt(bsEq) + ').</strong>');
+    } else if (beg != null && !near(beg, (V('eq','csBegin',0)||0) + (V('eq','reBegin',0)||0) + (V('eq','aociBegin',0)||0))) {
+      setCheck(e, 'bad', '<span class="wb-check-mark">✗</span> <strong>Beginning balances do not sum to the stated opening equity.</strong>');
+    } else {
+      setCheck(e, 'ok', '<span class="wb-check-mark">✓</span> <strong>Rollforward ties.</strong> Ending equity ' + fmt(end) + (bsEq != null ? ', matching the balance sheet.' : '.'));
+    }
+
+    /* cash flow: beginning + net change = ending */
+    var c = document.getElementById('check-cf');
+    var ce = V('cf', 'cashEnd', 0), bsCash = V('bs', 'cash', 0);
+    if (ce == null) {
+      setCheck(c, 'idle', 'Enter figures to check the cash reconciliation.');
+    } else if (bsCash != null && !near(ce, bsCash)) {
+      setCheck(c, 'bad', '<span class="wb-check-mark">✗</span> <strong>Ending cash ' + fmt(ce) + ' does not match the balance sheet (' + fmt(bsCash) + ').</strong> Restricted cash can explain a small gap.');
+    } else {
+      setCheck(c, 'ok', '<span class="wb-check-mark">✓</span> <strong>Cash reconciles.</strong> Ending balance ' + fmt(ce) + (bsCash != null ? ', matching the balance sheet.' : '.'));
+    }
+  }
+
+  /* =========================================================
+     7. Rendering — ratio worksheet
+     ========================================================= */
+
+  function fmtByUnit(v, unit) {
+    switch (unit) {
+      case 'pct':   return fmtPct(v);
+      case 'x':     return fmtX(v);
+      case 'days':  return fmtDays(v);
+      case 'ps':    return fmtMoneyPS(v);
+      default:      return fmt(v);
+    }
+  }
+
+  function ratioCard(r) {
+    var res0 = r.calc(0);
+    var res1 = null;
+    try { res1 = r.calc(1); } catch (err) { res1 = null; }
+
+    var card = el('div', 'wb-card');
+
+    var head = el('div', 'wb-card-name');
+    head.appendChild(el('span', null, r.name));
+    var unitWord = r.unit === 'money' ? unitsWord() : r.unit === 'days' ? 'days' : r.unit === 'ps' ? 'per share' : '';
+    if (unitWord) head.appendChild(el('span', 'wb-unit', unitWord));
+    card.appendChild(head);
+
+    var work = el('div', 'wb-work');
+    var frac = el('div', 'wb-frac');
+    var decs = res0.dec || [];
+
+    function partRow(p, i) {
+      var row = el('div', 'wb-frac-row');
+      row.appendChild(el('span', 'wb-l', p.l));
+      var dec = decs[i] != null ? decs[i] : (r.unit === 'days' && res0.op === 'sum' ? 1 : 0);
+      var vtxt = p.v == null ? '—' : fmt(p.v, dec);
+      var vs = el('span', 'wb-v', vtxt);
+      if (p.v != null && p.v < 0) vs.classList.add('wb-neg');
+      row.appendChild(vs);
+      return row;
+    }
+
+    if (res0.op === 'div') {
+      frac.appendChild(partRow(res0.parts[0], 0));
+      frac.appendChild(el('div', 'wb-frac-bar'));
+      frac.appendChild(partRow(res0.parts[1], 1));
+    } else {
+      res0.parts.forEach(function (p, i) {
+        if (i > 0) frac.appendChild(el('div', 'wb-frac-op', res0.signs[i]));
+        frac.appendChild(partRow(p, i));
+      });
+      frac.appendChild(el('div', 'wb-frac-bar'));
+    }
+    work.appendChild(frac);
+
+    var out = el('div', 'wb-result', fmtByUnit(res0.v, r.unit));
+    if (res0.v == null) out.setAttribute('data-empty', '1');
+    work.appendChild(out);
+    card.appendChild(work);
+
+    var foot = el('div', 'wb-card-foot');
+    var prior = el('span', 'wb-prior');
+    prior.textContent = yearLabel(1) + ': ' + (res1 && res1.v != null ? fmtByUnit(res1.v, r.unit) : '—');
+    foot.appendChild(prior);
+
+    var flag = r.flag ? r.flag(res0.v) : null;
+    if (flag) {
+      var chip = el('span', 'wb-chip', flag.text);
+      chip.setAttribute('data-tone', flag.tone);
+      chip.setAttribute('data-icon', flag.icon);
+      foot.appendChild(chip);
+    } else if (res0.v != null && res1 && res1.v != null && r.unit !== 'money') {
+      var delta = res0.v - res1.v;
+      var dchip = el('span', 'wb-chip', fmtSigned(r.unit === 'pct' ? delta * 100 : delta, r.unit === 'days' ? 1 : 2) + (r.unit === 'pct' ? ' pts' : ''));
+      /* r.dir says which way is favourable: +1 up is better, -1 down is better,
+         0 (the default) means the move carries no inherent verdict. */
+      var dir = r.dir || 0;
+      var tone = (dir === 0 || delta === 0) ? 'flat' : (delta * dir > 0 ? 'pos' : 'neg');
+      dchip.setAttribute('data-tone', tone);
+      dchip.setAttribute('data-icon', delta > 0 ? '↑' : delta < 0 ? '↓' : '=');
+      foot.appendChild(dchip);
+    }
+    card.appendChild(foot);
+
+    if (r.note) {
+      var nt = el('div', null, r.note);
+      nt.style.cssText = 'font-size:11.5px;color:var(--muted);line-height:1.45;';
+      card.appendChild(nt);
+    }
+    return card;
+  }
+
+  function cashCard(m) {
+    var card = el('div', 'wb-card');
+    var head = el('div', 'wb-card-name');
+    head.appendChild(el('span', null, m.name));
+    if (m.unit === 'money') head.appendChild(el('span', 'wb-unit', unitsWord()));
+    card.appendChild(head);
+
+    var work = el('div', 'wb-work');
+    var frac = el('div', 'wb-frac');
+    for (var y = 0; y < 3; y++) {
+      var v = m.calc(y);
+      var row = el('div', 'wb-frac-row');
+      row.appendChild(el('span', 'wb-l', yearLabel(y)));
+      var vs = el('span', 'wb-v', m.unit === 'pct' ? fmtPct(v) : fmt(v));
+      if (v != null && v < 0) vs.classList.add('wb-neg');
+      row.appendChild(vs);
+      frac.appendChild(row);
+    }
+    work.appendChild(frac);
+
+    var cur = m.calc(0), pri = m.calc(1);
+    var out = el('div', 'wb-result', m.unit === 'pct' ? fmtPct(cur) : fmt(cur));
+    if (cur == null) out.setAttribute('data-empty', '1');
+    work.appendChild(out);
+    card.appendChild(work);
+
+    var foot = el('div', 'wb-card-foot');
+    foot.appendChild(el('span', 'wb-prior', m.desc));
+    if (cur != null && pri != null && pri !== 0) {
+      var pctChg = (cur - pri) / Math.abs(pri);
+      var chip = el('span', 'wb-chip', fmtSigned(pctChg * 100, 1) + '%');
+      chip.setAttribute('data-tone', pctChg >= 0 ? 'pos' : 'neg');
+      chip.setAttribute('data-icon', pctChg >= 0 ? '↑' : '↓');
+      foot.appendChild(chip);
+    }
+    card.appendChild(foot);
+    return card;
+  }
+
+  function refreshRatios() {
+    var mount = document.getElementById('ratios-out');
+    mount.innerHTML = '';
+
+    var groups = [
+      { key: 'liq',  title: 'Liquidity &amp; Efficiency', sub: 'How readily the company can pay what it owes, and how quickly working capital cycles into cash.' },
+      { key: 'prof', title: 'Profitability &amp; Leverage', sub: 'What the company keeps out of every sales dollar, and who financed the assets that produced it.' },
+      { key: 'text', title: 'Additional Summary Measures', sub: 'The wider set from the analytical-measures summary. Several need inputs that are not on the face of the statements — market price, interest expense.' }
+    ];
+
+    groups.forEach(function (grp) {
+      var h = el('h3', 'wb-group-head');
+      h.innerHTML = grp.title;
+      mount.appendChild(h);
+      mount.appendChild(el('p', 'wb-group-sub', grp.sub));
+      var wrap = el('div', 'wb-cards');
+      RATIOS.filter(function (r) { return r.g === grp.key; }).forEach(function (r) {
+        wrap.appendChild(ratioCard(r));
+      });
+      mount.appendChild(wrap);
+    });
+
+    var ch = el('h3', 'wb-group-head');
+    ch.innerHTML = 'Cash Metrics';
+    mount.appendChild(ch);
+    mount.appendChild(el('p', 'wb-group-sub',
+      'EBIT, EBITDA and free cash flow across all three years. Note that the course gives two different free cash flow definitions — both are shown, since they answer slightly different questions.'));
+    var cwrap = el('div', 'wb-cards');
+    CASH_METRICS.forEach(function (m) { cwrap.appendChild(cashCard(m)); });
+    mount.appendChild(cwrap);
+  }
+
+  /* =========================================================
+     8. Trends & CAGR
+     ========================================================= */
+
+  function trendVal(id, i) { return parseNum((state.trend[id] || [])[i]); }
+  function trendLabel(id) {
+    var custom = state.trendLabels[id];
+    if (custom) return custom;
+    var def = TREND_METRICS.filter(function (m) { return m.id === id; })[0];
+    return def ? def.l : id;
+  }
+
+  function cagr(vals) {
+    var first = -1, last = -1;
+    for (var i = 0; i < vals.length; i++) {
+      if (vals[i] != null) { if (first < 0) first = i; last = i; }
+    }
+    if (first < 0 || last <= first) return null;
+    var a = vals[first], b = vals[last];
+    if (a == null || b == null || a <= 0 || b <= 0) return null;
+    return Math.pow(b / a, 1 / (last - first)) - 1;
+  }
+
+  function buildTrend() {
+    var t = document.getElementById('trend-table');
+    t.innerHTML = '';
+    var thead = el('thead'), htr = el('tr');
+    htr.appendChild(el('th', null, 'Metric'));
+    for (var i = 0; i < 6; i++) {
+      var th = el('th');
+      var inp = el('input', 'wb-num');
+      inp.type = 'text';
+      inp.style.cssText = 'text-align:right;font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;color:var(--muted);border-bottom-style:solid;';
+      inp.setAttribute('data-trendyear', String(i));
+      inp.setAttribute('aria-label', 'Year label ' + (i + 1));
+      inp.placeholder = 'Year ' + (i + 1);
+      th.appendChild(inp);
+      htr.appendChild(th);
+    }
+    var thc = el('th', 'wb-cagr-h', 'CAGR');
+    htr.appendChild(thc);
+    thead.appendChild(htr); t.appendChild(thead);
+
+    var tb = el('tbody');
+    TREND_METRICS.forEach(function (m) {
+      var tr = el('tr', 'wb-t-metric');
+      var td0 = el('td');
+      var lab = el('input', 'wb-num');
+      lab.type = 'text';
+      lab.style.cssText = 'text-align:left;font-weight:600;max-width:none;border-bottom-style:none;';
+      lab.setAttribute('data-trendlabel', m.id);
+      lab.setAttribute('aria-label', 'Metric name');
+      lab.placeholder = m.l;
+      td0.appendChild(lab);
+      tr.appendChild(td0);
+      for (var i = 0; i < 6; i++) {
+        var td = el('td');
+        var inp = el('input', 'wb-num');
+        inp.type = 'text'; inp.inputMode = 'decimal';
+        inp.setAttribute('data-trend', m.id + '|' + i);
+        inp.setAttribute('data-dec', '0');
+        inp.setAttribute('aria-label', m.l + ', year ' + (i + 1));
+        inp.placeholder = '—';
+        td.appendChild(inp); tr.appendChild(td);
+      }
+      var tdc = el('td', 'wb-cagr');
+      tdc.setAttribute('data-cagr', m.id);
+      tdc.textContent = '—';
+      tr.appendChild(tdc);
+      tb.appendChild(tr);
+
+      var yr = el('tr', 'wb-t-yoy');
+      yr.appendChild(el('td', null, 'growth %'));
+      for (var j = 0; j < 6; j++) {
+        var tdy = el('td');
+        tdy.setAttribute('data-yoy', m.id + '|' + j);
+        tdy.textContent = '';
+        yr.appendChild(tdy);
+      }
+      var tdn = el('td', 'wb-cagr');
+      tdn.setAttribute('data-cagrn', m.id);
+      yr.appendChild(tdn);
+      tb.appendChild(yr);
+    });
+    t.appendChild(tb);
+  }
+
+  function refreshTrend() {
+    document.querySelectorAll('[data-trendyear]').forEach(function (inp) {
+      var i = parseInt(inp.getAttribute('data-trendyear'), 10);
+      if (document.activeElement !== inp) inp.value = state.meta.trendYears[i] || '';
+    });
+    document.querySelectorAll('[data-trendlabel]').forEach(function (inp) {
+      var id = inp.getAttribute('data-trendlabel');
+      if (document.activeElement !== inp) inp.value = state.trendLabels[id] || '';
+    });
+    TREND_METRICS.forEach(function (m) {
+      var vals = [];
+      for (var i = 0; i < 6; i++) vals.push(trendVal(m.id, i));
+      for (var j = 0; j < 6; j++) {
+        var cell = document.querySelector('[data-yoy="' + m.id + '|' + j + '"]');
+        if (!cell) continue;
+        if (j === 0 || vals[j] == null || vals[j - 1] == null || vals[j - 1] === 0) {
+          cell.textContent = j === 0 && vals[0] != null ? 'n/a' : '';
+          cell.classList.remove('wb-neg');
+        } else {
+          var gr = (vals[j] - vals[j - 1]) / Math.abs(vals[j - 1]);
+          cell.textContent = fmtSigned(gr * 100, 1) + '%';
+          cell.classList.toggle('wb-neg', gr < 0);
+        }
+      }
+      var cg = cagr(vals);
+      var cc = document.querySelector('[data-cagr="' + m.id + '"]');
+      var cn = document.querySelector('[data-cagrn="' + m.id + '"]');
+      if (cc) cc.textContent = cg == null ? '—' : (cg * 100).toFixed(1) + '%';
+      if (cn) {
+        var first = -1, last = -1;
+        for (var k = 0; k < 6; k++) if (vals[k] != null) { if (first < 0) first = k; last = k; }
+        cn.textContent = (cg == null || last <= first) ? '' : (last - first) + ' yr';
+      }
+    });
+  }
+
+  /* =========================================================
+     9. Charts
+     ========================================================= */
+
+  var SERIES = ['--s1', '--s2', '--s3'];
+  function seriesColor(i) {
+    return getComputedStyle(document.documentElement).getPropertyValue(SERIES[i % 3]).trim() || '#2a78d6';
+  }
+  function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+  function svg(tag, attrs) {
+    var e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (var k in attrs) if (attrs.hasOwnProperty(k) && attrs[k] != null) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function niceScale(min, max, ticks) {
+    ticks = ticks || 5;
+    if (min === max) { min = min - 1; max = max + 1; }
+    var span = max - min;
+    var step = Math.pow(10, Math.floor(Math.log(span / ticks) / Math.LN10));
+    var err = (span / ticks) / step;
+    if (err >= 7.5) step *= 10; else if (err >= 3) step *= 5; else if (err >= 1.5) step *= 2;
+    var lo = Math.floor(min / step) * step;
+    var hi = Math.ceil(max / step) * step;
+    var out = [];
+    for (var v = lo; v <= hi + step / 2; v += step) out.push(Math.round(v / step) * step);
+    return { lo: lo, hi: hi, ticks: out };
+  }
+
+  function figShell(cfg) {
+    var fig = el('figure', 'wb-fig');
+    fig.style.margin = '0';
+    fig.appendChild(el('h3', null, cfg.title));
+    if (cfg.sub) fig.appendChild(el('p', 'wb-fig-sub', cfg.sub));
+    if (cfg.series.length > 1) {
+      var lg = el('div', 'wb-legend');
+      cfg.series.forEach(function (s, i) {
+        var sp = el('span');
+        var sw = el('span', 'wb-swatch');
+        sw.style.background = seriesColor(i);
+        sp.appendChild(sw);
+        sp.appendChild(document.createTextNode(s.name));
+        lg.appendChild(sp);
+      });
+      fig.appendChild(lg);
+    }
+    var plot = el('div', 'wb-plot');
+    fig.appendChild(plot);
+
+    var det = el('details', 'wb-fig-foot');
+    det.appendChild(el('summary', null, 'Show the numbers'));
+    var dt = el('table', 'wb-dt');
+    var th = el('thead'), htr = el('tr');
+    htr.appendChild(el('th', null, ''));
+    cfg.xLabels.forEach(function (x) { htr.appendChild(el('th', null, x)); });
+    th.appendChild(htr); dt.appendChild(th);
+    var tb = el('tbody');
+    cfg.series.forEach(function (s) {
+      var tr = el('tr');
+      tr.appendChild(el('td', null, s.name));
+      s.values.forEach(function (v) {
+        var td = el('td', null, cfg.tableFmt ? cfg.tableFmt(v) : fmt(v));
+        if (v != null && v < 0) td.classList.add('wb-neg');
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+    dt.appendChild(tb);
+    det.appendChild(dt);
+    fig.appendChild(det);
+    return { fig: fig, plot: plot };
+  }
+
+  function attachTip(plot, W, H, resolve) {
+    var tip = el('div', 'wb-tip');
+    plot.appendChild(tip);
+    var svgNode = plot.querySelector('svg');
+    function move(ev) {
+      var rect = svgNode.getBoundingClientRect();
+      var px = (ev.clientX - rect.left) / rect.width * W;
+      var r = resolve(px);
+      if (!r) { tip.style.opacity = '0'; return; }
+      tip.innerHTML = r.html;
+      tip.style.opacity = '1';
+      var left = (r.x / W) * rect.width + 14;
+      if (left + tip.offsetWidth > rect.width) left = (r.x / W) * rect.width - tip.offsetWidth - 14;
+      tip.style.left = Math.max(0, left) + 'px';
+      tip.style.top = Math.max(0, Math.min(ev.clientY - rect.top - 10, rect.height - tip.offsetHeight)) + 'px';
+    }
+    svgNode.addEventListener('mousemove', move);
+    svgNode.addEventListener('mouseleave', function () { tip.style.opacity = '0'; });
+  }
+
+  function tipRows(xLabel, series, idx, fmtFn) {
+    var h = '<div class="wb-tip-x">' + xLabel + '</div>';
+    series.forEach(function (s, i) {
+      var v = s.values[idx];
+      h += '<div class="wb-tip-row"><span class="wb-tip-key"><span class="wb-swatch" style="background:' + seriesColor(i) + '"></span>' + s.name + '</span><b>' + fmtFn(v) + '</b></div>';
+    });
+    return h;
+  }
+
+  function lineChart(cfg) {
+    var sh = figShell(cfg), plot = sh.plot;
+    var W = 720, H = 300, P = { l: 66, r: 20, t: 14, b: 34 };
+    var s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': cfg.title });
+
+    var all = [];
+    cfg.series.forEach(function (ser) { ser.values.forEach(function (v) { if (v != null) all.push(v); }); });
+    if (!all.length) { plot.appendChild(el('p', 'wb-empty', 'No data yet.')); return sh.fig; }
+    var mn = Math.min.apply(null, all), mx = Math.max.apply(null, all);
+    if (cfg.zeroBase !== false) mn = Math.min(mn, 0);
+    var sc = niceScale(mn, mx, 5);
+    var iw = W - P.l - P.r, ih = H - P.t - P.b;
+    function X(i) { return P.l + (cfg.xLabels.length === 1 ? iw / 2 : (i / (cfg.xLabels.length - 1)) * iw); }
+    function Y(v) { return P.t + ih - ((v - sc.lo) / (sc.hi - sc.lo)) * ih; }
+
+    sc.ticks.forEach(function (t) {
+      s.appendChild(svg('line', { x1: P.l, x2: W - P.r, y1: Y(t), y2: Y(t), stroke: cssVar('--grid'), 'stroke-width': 1 }));
+      var tx = svg('text', { x: P.l - 10, y: Y(t) + 4, 'text-anchor': 'end', fill: cssVar('--muted'), 'font-size': 11, 'font-family': 'var(--sans)' });
+      tx.textContent = cfg.axisFmt ? cfg.axisFmt(t) : fmt(t);
+      s.appendChild(tx);
+    });
+    if (sc.lo < 0 && sc.hi > 0) {
+      s.appendChild(svg('line', { x1: P.l, x2: W - P.r, y1: Y(0), y2: Y(0), stroke: cssVar('--axis'), 'stroke-width': 1.5 }));
+    }
+    cfg.xLabels.forEach(function (lab, i) {
+      var tx = svg('text', { x: X(i), y: H - 12, 'text-anchor': 'middle', fill: cssVar('--muted'), 'font-size': 11, 'font-family': 'var(--sans)' });
+      tx.textContent = lab;
+      s.appendChild(tx);
+    });
+
+    var crosshair = svg('line', { x1: 0, x2: 0, y1: P.t, y2: P.t + ih, stroke: cssVar('--axis'), 'stroke-width': 1, opacity: 0 });
+    s.appendChild(crosshair);
+
+    var endLabels = [];
+    cfg.series.forEach(function (ser, si) {
+      var col = seriesColor(si);
+      var dstr = '', open = false;
+      ser.values.forEach(function (v, i) {
+        if (v == null) { open = false; return; }
+        dstr += (open ? ' L' : ' M') + X(i) + ',' + Y(v);
+        open = true;
+      });
+      if (dstr) s.appendChild(svg('path', { d: dstr.trim(), fill: 'none', stroke: col, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+      ser.values.forEach(function (v, i) {
+        if (v == null) return;
+        s.appendChild(svg('circle', { cx: X(i), cy: Y(v), r: 4, fill: col, stroke: cssVar('--card'), 'stroke-width': 2 }));
+      });
+      /* direct label on the last point — identity never rests on color alone */
+      var lastI = -1;
+      ser.values.forEach(function (v, i) { if (v != null) lastI = i; });
+      if (lastI >= 0 && cfg.series.length > 1) {
+        endLabels.push({ name: ser.name, i: lastI, y: Y(ser.values[lastI]) - 8 });
+      }
+    });
+
+    /* Series whose final values are close would stack their labels on top of one
+       another; nudge them apart, keeping the original vertical order. */
+    endLabels.sort(function (a, b) { return a.y - b.y; });
+    var MIN_GAP = 13;
+    for (var li = 1; li < endLabels.length; li++) {
+      if (endLabels[li].y - endLabels[li - 1].y < MIN_GAP) {
+        endLabels[li].y = endLabels[li - 1].y + MIN_GAP;
+      }
+    }
+    var overflow = endLabels.length ? endLabels[endLabels.length - 1].y - (P.t + ih) : 0;
+    if (overflow > 0) endLabels.forEach(function (L) { L.y -= overflow; });
+
+    endLabels.forEach(function (L) {
+      var atEnd = L.i === cfg.xLabels.length - 1;
+      var tx = svg('text', {
+        x: X(L.i) + (atEnd ? -8 : 8), y: L.y, fill: cssVar('--ink-2'),
+        'font-size': 11, 'font-weight': 600, 'font-family': 'var(--sans)',
+        'text-anchor': atEnd ? 'end' : 'start',
+        stroke: cssVar('--card'), 'stroke-width': 3, 'paint-order': 'stroke'
+      });
+      tx.textContent = L.name;
+      s.appendChild(tx);
+    });
+
+    plot.appendChild(s);
+    attachTip(plot, W, H, function (px) {
+      var n = cfg.xLabels.length;
+      var i = Math.round(((px - P.l) / iw) * (n - 1));
+      if (i < 0 || i >= n) return null;
+      crosshair.setAttribute('x1', X(i)); crosshair.setAttribute('x2', X(i)); crosshair.setAttribute('opacity', 1);
+      return { x: X(i), html: tipRows(cfg.xLabels[i], cfg.series, i, cfg.tipFmt || function (v) { return fmt(v); }) };
+    });
+    plot.querySelector('svg').addEventListener('mouseleave', function () { crosshair.setAttribute('opacity', 0); });
+    return sh.fig;
+  }
+
+  function barPath(x, w, yTop, yBase, r) {
+    var h = Math.abs(yBase - yTop);
+    r = Math.min(r, w / 2, h);
+    if (h < 0.5) return '';
+    if (yTop < yBase) {   /* positive: round the top */
+      return 'M' + x + ',' + yBase + ' L' + x + ',' + (yTop + r) +
+             ' Q' + x + ',' + yTop + ' ' + (x + r) + ',' + yTop +
+             ' L' + (x + w - r) + ',' + yTop + ' Q' + (x + w) + ',' + yTop + ' ' + (x + w) + ',' + (yTop + r) +
+             ' L' + (x + w) + ',' + yBase + ' Z';
+    }
+    return 'M' + x + ',' + yBase + ' L' + x + ',' + (yTop - r) +
+           ' Q' + x + ',' + yTop + ' ' + (x + r) + ',' + yTop +
+           ' L' + (x + w - r) + ',' + yTop + ' Q' + (x + w) + ',' + yTop + ' ' + (x + w) + ',' + (yTop - r) +
+           ' L' + (x + w) + ',' + yBase + ' Z';
+  }
+
+  function groupedBarChart(cfg) {
+    var sh = figShell(cfg), plot = sh.plot;
+    var W = 720, H = 300, P = { l: 70, r: 20, t: 14, b: 34 };
+    var s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': cfg.title });
+
+    var all = [];
+    cfg.series.forEach(function (ser) { ser.values.forEach(function (v) { if (v != null) all.push(v); }); });
+    if (!all.length) { plot.appendChild(el('p', 'wb-empty', 'No data yet.')); return sh.fig; }
+    var sc = niceScale(Math.min(0, Math.min.apply(null, all)), Math.max(0, Math.max.apply(null, all)), 5);
+    var iw = W - P.l - P.r, ih = H - P.t - P.b;
+    function Y(v) { return P.t + ih - ((v - sc.lo) / (sc.hi - sc.lo)) * ih; }
+
+    sc.ticks.forEach(function (t) {
+      s.appendChild(svg('line', { x1: P.l, x2: W - P.r, y1: Y(t), y2: Y(t), stroke: cssVar('--grid'), 'stroke-width': 1 }));
+      var tx = svg('text', { x: P.l - 10, y: Y(t) + 4, 'text-anchor': 'end', fill: cssVar('--muted'), 'font-size': 11, 'font-family': 'var(--sans)' });
+      tx.textContent = cfg.axisFmt ? cfg.axisFmt(t) : fmt(t);
+      s.appendChild(tx);
+    });
+    s.appendChild(svg('line', { x1: P.l, x2: W - P.r, y1: Y(0), y2: Y(0), stroke: cssVar('--axis'), 'stroke-width': 1.5 }));
+
+    var nGroups = cfg.xLabels.length, nSer = cfg.series.length;
+    var gw = iw / nGroups, inner = gw * 0.7, bw = (inner - 2 * (nSer - 1)) / nSer;
+
+    cfg.xLabels.forEach(function (lab, gi) {
+      var gx = P.l + gi * gw + (gw - inner) / 2;
+      cfg.series.forEach(function (ser, si) {
+        var v = ser.values[gi];
+        if (v == null) return;
+        var x = gx + si * (bw + 2);
+        var p = barPath(x, bw, Y(v), Y(0), 4);
+        if (p) s.appendChild(svg('path', { d: p, fill: seriesColor(si) }));
+      });
+      var tx = svg('text', { x: P.l + gi * gw + gw / 2, y: H - 12, 'text-anchor': 'middle', fill: cssVar('--muted'), 'font-size': 11, 'font-family': 'var(--sans)' });
+      tx.textContent = lab;
+      s.appendChild(tx);
+    });
+
+    plot.appendChild(s);
+    attachTip(plot, W, H, function (px) {
+      var gi = Math.floor((px - P.l) / gw);
+      if (gi < 0 || gi >= nGroups) return null;
+      return { x: P.l + gi * gw + gw / 2, html: tipRows(cfg.xLabels[gi], cfg.series, gi, cfg.tipFmt || function (v) { return fmt(v); }) };
+    });
+    return sh.fig;
+  }
+
+  function hbarChart(cfg) {
+    /* cfg.rows: [{name, value}] — value is a share of sales, 0..1 */
+    var fig = el('figure', 'wb-fig');
+    fig.style.margin = '0';
+    fig.appendChild(el('h3', null, cfg.title));
+    if (cfg.sub) fig.appendChild(el('p', 'wb-fig-sub', cfg.sub));
+    var plot = el('div', 'wb-plot');
+    fig.appendChild(plot);
+
+    var rows = cfg.rows.filter(function (r) { return r.value != null; });
+    if (!rows.length) { plot.appendChild(el('p', 'wb-empty', 'No data yet.')); return fig; }
+
+    var rowH = 34, W = 720, P = { l: 190, r: 60, t: 8, b: 8 };
+    var H = P.t + P.b + rows.length * rowH;
+    var s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': cfg.title });
+    var iw = W - P.l - P.r;
+    var mx = Math.max.apply(null, rows.map(function (r) { return Math.abs(r.value); }));
+    var scaleMax = Math.max(mx, 0.1);
+
+    rows.forEach(function (r, i) {
+      var y = P.t + i * rowH;
+      var lab = svg('text', { x: P.l - 12, y: y + rowH / 2 + 4, 'text-anchor': 'end', fill: cssVar('--ink-2'), 'font-size': 12, 'font-family': 'var(--sans)' });
+      lab.textContent = r.name;
+      s.appendChild(lab);
+      var w = Math.max(2, (Math.abs(r.value) / scaleMax) * iw);
+      var col = seriesColor(r.slot != null ? r.slot : 0);
+      var path = 'M' + P.l + ',' + (y + 8) + ' L' + (P.l + w - 4) + ',' + (y + 8) +
+                 ' Q' + (P.l + w) + ',' + (y + 8) + ' ' + (P.l + w) + ',' + (y + 12) +
+                 ' L' + (P.l + w) + ',' + (y + rowH - 12) +
+                 ' Q' + (P.l + w) + ',' + (y + rowH - 8) + ' ' + (P.l + w - 4) + ',' + (y + rowH - 8) +
+                 ' L' + P.l + ',' + (y + rowH - 8) + ' Z';
+      s.appendChild(svg('path', { d: path, fill: col, opacity: r.muted ? 0.55 : 1 }));
+      var val = svg('text', { x: P.l + w + 10, y: y + rowH / 2 + 4, fill: cssVar('--ink'), 'font-size': 12, 'font-weight': 600, 'font-family': 'var(--sans)' });
+      val.textContent = fmtPct(r.value);
+      s.appendChild(val);
+    });
+    plot.appendChild(s);
+
+    var det = el('details', 'wb-fig-foot');
+    det.appendChild(el('summary', null, 'Show the numbers'));
+    var dt = el('table', 'wb-dt');
+    var tb = el('tbody');
+    rows.forEach(function (r) {
+      var tr = el('tr');
+      tr.appendChild(el('td', null, r.name));
+      tr.appendChild(el('td', null, fmtPct(r.value, 1)));
+      tr.appendChild(el('td', null, fmt(r.abs)));
+      tb.appendChild(tr);
+    });
+    dt.appendChild(tb);
+    det.appendChild(dt);
+    fig.appendChild(det);
+    return fig;
+  }
+
+  function refreshCharts() {
+    var mount = document.getElementById('figs');
+    mount.innerHTML = '';
+
+    /* --- 1. six-year trend --- */
+    var tLabels = [];
+    for (var i = 0; i < 6; i++) tLabels.push(state.meta.trendYears[i] || ('Y' + (i + 1)));
+    var tSeries = ['sales', 'ni', 'cfo'].map(function (id) {
+      var vals = [];
+      for (var j = 0; j < 6; j++) vals.push(trendVal(id, j));
+      return { name: trendLabel(id), values: vals };
+    }).filter(function (s) { return s.values.some(function (v) { return v != null; }); });
+
+    if (tSeries.length) {
+      mount.appendChild(lineChart({
+        title: 'Six-Year Trend',
+        sub: 'Figures ' + unitsWord() + '. Entered on the Trends tab.',
+        xLabels: tLabels, series: tSeries
+      }));
+    }
+
+    /* --- 2. margins --- */
+    var yl = [yearLabel(2), yearLabel(1), yearLabel(0)];
+    function marginSeries(name, id) {
+      var vals = [2, 1, 0].map(function (y) { return divide(V('is', id, y), V('is', 'netSales', y)); });
+      return { name: name, values: vals };
+    }
+    var mSeries = [marginSeries('Gross margin', 'gross'), marginSeries('Operating margin', 'ebit'), marginSeries('Net margin', 'ni')];
+    if (mSeries.some(function (s) { return s.values.some(function (v) { return v != null; }); })) {
+      mount.appendChild(lineChart({
+        title: 'Margin Trend',
+        sub: 'Each measure as a percentage of net sales.',
+        xLabels: yl, series: mSeries,
+        axisFmt: function (v) { return (v * 100).toFixed(0) + '%'; },
+        tipFmt: function (v) { return fmtPct(v); },
+        tableFmt: function (v) { return fmtPct(v); }
+      }));
+    }
+
+    /* --- 3. cash flow by activity --- */
+    var cfSeries = [
+      { name: 'Operating', values: [2, 1, 0].map(function (y) { return V('cf', 'cfo', y); }) },
+      { name: 'Investing', values: [2, 1, 0].map(function (y) { return V('cf', 'cfi', y); }) },
+      { name: 'Financing', values: [2, 1, 0].map(function (y) { return V('cf', 'cff', y); }) }
+    ];
+    if (cfSeries.some(function (s) { return s.values.some(function (v) { return v != null; }); })) {
+      mount.appendChild(groupedBarChart({
+        title: 'Cash Flow by Activity',
+        sub: 'Figures ' + unitsWord() + '. Bars below the line are net cash used.',
+        xLabels: yl, series: cfSeries
+      }));
+    }
+
+    /* --- 4. common-size income statement --- */
+    var sales = V('is', 'netSales', 0);
+    if (sales) {
+      var rows = [
+        { name: 'Cost of sales',        id: 'totalCos', slot: 1 },
+        { name: 'Gross margin',         id: 'gross',    slot: 2 },
+        { name: 'Research & development', id: 'rd',     slot: 1, muted: true },
+        { name: 'Selling, general & admin', id: 'sga',  slot: 1, muted: true },
+        { name: 'Operating income',     id: 'ebit',     slot: 0 },
+        { name: 'Net income',           id: 'ni',       slot: 0 }
+      ].map(function (r) {
+        var v = V('is', r.id, 0);
+        return { name: r.name, slot: r.slot, muted: r.muted, abs: v, value: v == null ? null : v / sales };
+      });
+      mount.appendChild(hbarChart({
+        title: 'Common-Size Income Statement — ' + yearLabel(0),
+        sub: 'Every line as a share of net sales of ' + fmt(sales) + ' (' + unitsWord() + ').',
+        rows: rows
+      }));
+    }
+
+    if (!mount.children.length) {
+      mount.appendChild(el('p', 'wb-empty', 'Enter statement figures and the charts will draw themselves.'));
+    }
+  }
+
+  /* =========================================================
+     10. Refresh orchestration & persistence
+     ========================================================= */
+
+  var chartTimer = null;
+  function refresh(opts) {
+    computeAll();
+    refreshCells();
+    refreshChecks();
+    refreshRatios();
+    refreshTrend();
+    if (chartTimer) clearTimeout(chartTimer);
+    chartTimer = setTimeout(refreshCharts, opts && opts.now ? 0 : 160);
+    save();
+  }
+
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* private mode */ }
+  }
+  function load() {
+    try {
+      var s = localStorage.getItem(STORE_KEY);
+      if (!s) return false;
+      var o = JSON.parse(s);
+      if (!o || !o.meta) return false;
+      state = o;
+      state.trendLabels = state.trendLabels || {};
+      state.meta.trendYears = state.meta.trendYears || ['', '', '', '', '', ''];
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* Figures are stored as the text the user typed; on display they are set in
+     statement style — thousands separators, negatives in parentheses. parseNum
+     reads that form back, so the stored text stays round-trippable. */
+  function display(text, dec) {
+    var v = parseNum(text);
+    return v == null ? (text || '') : fmt(v, dec);
+  }
+  function formatInput(inp) {
+    var dec = parseInt(inp.getAttribute('data-dec'), 10) || 0;
+    inp.value = display(inp.value, dec);
+  }
+
+  function paintInputs() {
+    document.querySelectorAll('[data-in]').forEach(function (inp) {
+      var p = inp.getAttribute('data-in').split('|');
+      if (document.activeElement === inp) return;
+      inp.value = display(raw(p[0], p[1], parseInt(p[2], 10)), parseInt(inp.getAttribute('data-dec'), 10) || 0);
+    });
+    document.querySelectorAll('[data-trend]').forEach(function (inp) {
+      var p = inp.getAttribute('data-trend').split('|');
+      if (document.activeElement !== inp) inp.value = display((state.trend[p[0]] || [])[parseInt(p[1], 10)], 0);
+    });
+    document.querySelectorAll('[data-meta]').forEach(function (n) {
+      var k = n.getAttribute('data-meta');
+      if (document.activeElement !== n) n.value = state.meta[k] == null ? '' : state.meta[k];
+    });
+    document.querySelectorAll('[data-year]').forEach(function (n) {
+      var i = parseInt(n.getAttribute('data-year'), 10);
+      if (document.activeElement !== n) n.value = state.meta.years[i] || '';
+    });
+  }
+
+  /* =========================================================
+     11. Demo data — Apple FY2023–FY2025
+     ========================================================= */
+
+  var APPLE = {
+    meta: { company: 'Apple Inc.', units: '1000000', shareUnits: '1000', days: '365',
+            years: ['FY2025', 'FY2024', 'FY2023'],
+            trendYears: ['2020', '2021', '2022', '2023', '2024', '2025'] },
+    bs: {
+      cash: ['35934', '29943'], mktSecCur: ['18763', '35228'], ar: ['39777', '33410'],
+      vendorAr: ['33180', '32833'], inv: ['5718', '7286'], otherCa: ['14585', '14287'],
+      mktSecLt: ['77723', '91479'], ppe: ['49834', '45680'], otherNca: ['83727', '74834'],
+      ap: ['69860', '68960'], otherCl: ['66387', '78304'], defRev: ['9055', '8249'],
+      commPaper: ['7979', '9967'], termDebtCur: ['12350', '10912'],
+      termDebtLt: ['78328', '85750'], otherNcl: ['41549', '45888'],
+      cs: ['93568', '83276'], re: ['-14264', '-19154'], aoci: ['-5571', '-7172']
+    },
+    is: {
+      salesProd: ['307003', '294866', '298085'], salesServ: ['109158', '96169', '85200'],
+      cosProd: ['194116', '185233', '189282'], cosServ: ['26844', '25119', '24855'],
+      rd: ['34550', '31370', '29915'], sga: ['27601', '26097', '24932'],
+      otherInc: ['-321', '269', '-565'], tax: ['20719', '29749', '16741'],
+      epsBasic: ['7.49', '6.11', '6.16'], epsDiluted: ['7.46', '6.08', '6.13'],
+      shBasic: ['14948500', '15343783', '15744231'], shDiluted: ['15004697', '15408095', '15812547'],
+      dpsDecl: ['1.02', '0.98', '0.94']
+    },
+    eq: {
+      eqBegin: ['56950', '62146', '50672'],
+      csBegin: ['83276', '73812', '64849'], csIssued: ['1498', '1423', '1346'],
+      csWithheld: ['-4452', '-3993', '-3521'], csSbc: ['13246', '12034', '11138'],
+      reBegin: ['-19154', '-214', '-3068'], reNi: ['112010', '93736', '96995'],
+      reDiv: ['-15413', '-15218', '-14996'], reWithheld: ['-1655', '-1612', '-2099'],
+      reRepurch: ['-90052', '-95846', '-77046'],
+      aociBegin: ['-7172', '-11452', '-11109'], aociOci: ['1601', '4280', '-343'],
+      dpsEq: ['1.02', '0.98', '0.94']
+    },
+    cf: {
+      cashBegin: ['29943', '30737', '24977'],
+      cfNi: ['112010', '93736', '96995'], da: ['11698', '11445', '11519'],
+      sbc: ['12863', '11688', '10833'], otherAdj: ['-89', '-2266', '-2227'],
+      dAr: ['-6682', '-3788', '-1688'], dVendor: ['-347', '-1356', '1271'],
+      dInv: ['1400', '-1046', '-1618'], dOtherAssets: ['-9197', '-11731', '-5684'],
+      dAp: ['902', '6020', '-1889'], dOtherLiab: ['-11076', '15552', '3031'],
+      purchSec: ['-24407', '-48656', '-29513'], matSec: ['40907', '51211', '39686'],
+      saleSec: ['12890', '11135', '5828'], capex: ['-12715', '-9447', '-10959'],
+      otherInv: ['-1480', '-1308', '-1337'],
+      taxShare: ['-5960', '-5441', '-5431'], divPaid: ['-15421', '-15234', '-15025'],
+      repurch: ['-90711', '-94949', '-77550'], issueDebt: ['4481', '0', '5228'],
+      repayDebt: ['-10932', '-9958', '-11151'], commPaperNet: ['-2032', '3960', '-3978'],
+      otherFin: ['-111', '-361', '-581']
+    },
+    trend: {
+      sales: ['274515', '365817', '394328', '383285', '391035', '416161'],
+      ni:    ['57411', '94680', '99803', '96995', '93736', '112010'],
+      cfo:   ['80674', '104038', '122151', '110543', '118254', '111482']
+    },
+    trendLabels: {}
+  };
+
+  /* =========================================================
+     12. Wiring
+     ========================================================= */
+
+  function initTabs() {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.wb-tab'));
+    function select(tab) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+      if (tab.id === 'tab-charts') refreshCharts();
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { select(t); });
+      t.addEventListener('keydown', function (ev) {
+        var j = null;
+        if (ev.key === 'ArrowRight') j = (i + 1) % tabs.length;
+        else if (ev.key === 'ArrowLeft') j = (i - 1 + tabs.length) % tabs.length;
+        else if (ev.key === 'Home') j = 0;
+        else if (ev.key === 'End') j = tabs.length - 1;
+        if (j != null) { ev.preventDefault(); tabs[j].focus(); select(tabs[j]); }
+      });
+    });
+  }
+
+  function initInputs() {
+    document.addEventListener('input', function (ev) {
+      var t = ev.target;
+      if (t.hasAttribute && t.hasAttribute('data-in')) {
+        var p = t.getAttribute('data-in').split('|');
+        setRaw(p[0], p[1], parseInt(p[2], 10), t.value);
+        refresh();
+      } else if (t.hasAttribute && t.hasAttribute('data-trend')) {
+        var q = t.getAttribute('data-trend').split('|');
+        if (!state.trend[q[0]]) state.trend[q[0]] = [];
+        state.trend[q[0]][parseInt(q[1], 10)] = t.value;
+        refresh();
+      } else if (t.hasAttribute && t.hasAttribute('data-trendyear')) {
+        state.meta.trendYears[parseInt(t.getAttribute('data-trendyear'), 10)] = t.value;
+        refresh();
+      } else if (t.hasAttribute && t.hasAttribute('data-trendlabel')) {
+        state.trendLabels[t.getAttribute('data-trendlabel')] = t.value;
+        refresh();
+      } else if (t.hasAttribute && t.hasAttribute('data-meta')) {
+        state.meta[t.getAttribute('data-meta')] = t.value;
+        refresh();
+      } else if (t.hasAttribute && t.hasAttribute('data-year')) {
+        state.meta.years[parseInt(t.getAttribute('data-year'), 10)] = t.value;
+        refresh();
+      }
+    });
+    /* Set the figure in statement style once the field is left. */
+    document.addEventListener('focusout', function (ev) {
+      var t = ev.target;
+      if (t.hasAttribute && (t.hasAttribute('data-in') || t.hasAttribute('data-trend'))) {
+        formatInput(t);
+        if (t.hasAttribute('data-in')) {
+          var p = t.getAttribute('data-in').split('|');
+          setRaw(p[0], p[1], parseInt(p[2], 10), t.value);
+        } else {
+          var q = t.getAttribute('data-trend').split('|');
+          if (!state.trend[q[0]]) state.trend[q[0]] = [];
+          state.trend[q[0]][parseInt(q[1], 10)] = t.value;
+        }
+        save();
+      }
+    });
+    document.addEventListener('change', function (ev) {
+      if (ev.target.tagName === 'SELECT' && ev.target.hasAttribute('data-meta')) {
+        state.meta[ev.target.getAttribute('data-meta')] = ev.target.value;
+        refresh({ now: true });
+      }
+    });
+  }
+
+  function initButtons() {
+    document.getElementById('btn-demo').addEventListener('click', function () {
+      state = JSON.parse(JSON.stringify(APPLE));
+      paintInputs();
+      refresh({ now: true });
+    });
+    document.getElementById('btn-clear').addEventListener('click', function () {
+      if (!confirm('Clear every figure in the workbook? This cannot be undone.')) return;
+      state = blank();
+      paintInputs();
+      refresh({ now: true });
+    });
+    document.getElementById('btn-save').addEventListener('click', function () {
+      var name = (state.meta.company || 'workbook').replace(/[^\w\-]+/g, '-').toLowerCase();
+      var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name + '-financials.json';
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    });
+    document.getElementById('btn-load').addEventListener('click', function () {
+      document.getElementById('file-in').click();
+    });
+    document.getElementById('file-in').addEventListener('change', function (ev) {
+      var f = ev.target.files[0];
+      if (!f) return;
+      var rd = new FileReader();
+      rd.onload = function () {
+        try {
+          var o = JSON.parse(rd.result);
+          if (!o || !o.meta) throw new Error('bad');
+          state = o;
+          state.trendLabels = state.trendLabels || {};
+          state.meta.trendYears = state.meta.trendYears || ['', '', '', '', '', ''];
+          paintInputs();
+          refresh({ now: true });
+        } catch (e) {
+          alert('That file is not a workbook export. Choose a JSON file saved from this page.');
+        }
+      };
+      rd.readAsText(f);
+      ev.target.value = '';
+    });
+    document.getElementById('btn-print').addEventListener('click', function () { window.print(); });
+    document.getElementById('btn-theme').addEventListener('click', function () {
+      var cur = document.documentElement.getAttribute('data-theme');
+      var isDark = cur ? cur === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      refreshCharts();
+    });
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { refreshCharts(); });
+  }
+
+  /* boot ---------------------------------------------------- */
+
+  buildSheet('bs', document.getElementById('sheet-bs'));
+  buildSheet('is', document.getElementById('sheet-is'));
+  buildSheet('eq', document.getElementById('sheet-eq'));
+  buildSheet('cf', document.getElementById('sheet-cf'));
+  buildTrend();
+  initTabs();
+  initInputs();
+  initButtons();
+
+  if (!load()) state = JSON.parse(JSON.stringify(APPLE));
+  paintInputs();
+  refresh({ now: true });
+})();
+</script>
+</body>
+</html>
