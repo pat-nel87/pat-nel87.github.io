@@ -88,15 +88,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      # If this job fails while `build` succeeds, the problem is GitHub's Pages
+      # publish fleet, never the site content -- `build` is what compiles and
+      # uploads; this step only asks Pages to publish the finished artifact.
+      #
+      # Two traps, both learned the hard way on 2026-08-06:
+      #
+      #  1. The Pages deployment ID *is* the commit SHA. On timeout this action
+      #     cancels that deployment, and the cancelled state stays bound to the
+      #     SHA. Every later re-run of the same commit then dies in seconds with
+      #     "Deployment cancelled". Re-running can never recover it -- only a
+      #     NEW commit will.
+      #
+      #  2. The `timeout` input does not raise the limit. deploy-pages@v4 caps
+      #     it internally at the 600000ms default, so passing 1800000 is
+      #     accepted, logged, and then ignored. Don't bother.
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          # The Pages deployment ID is the commit SHA. When this action times
-          # out it CANCELS that deployment, and the cancelled state sticks to
-          # the SHA -- every later re-run of the same commit then fails
-          # instantly with "Deployment cancelled" and can only be recovered by
-          # pushing a new commit. A backlog in GitHub's Pages publish fleet can
-          # exceed the 10 minute default, so wait longer rather than poison the
-          # commit. (Default: 600000.)
-          timeout: 1800000
