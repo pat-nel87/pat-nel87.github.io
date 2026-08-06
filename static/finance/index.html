@@ -916,12 +916,32 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
       },
       flag: function (v) { return v == null ? null : v < 1 ? { tone: 'warn', icon: '!', text: 'Below 1.00' } : { tone: 'pos', icon: '✓', text: 'At or above 1.00' }; } },
 
+    /* Quick assets = cash + marketable securities + receivables. The course
+       fill-in sheet writes the numerator as "Cash + Accounts Receivable",
+       omitting marketable securities, but the textbook summary slide in the
+       same deck says "Quick Assets" — which includes them, as does standard
+       practice. We compute the correct form and show the narrower one in the
+       note, so an answer key built on the fill-in sheet can still be matched. */
     { g: 'liq', name: 'Quick Ratio', unit: 'x', dir: 1, calc: function (y) {
-        var cash = V('bs', 'cash', y), ar = V('bs', 'ar', y), cl = V('bs', 'tcl', y);
-        var n = (cash == null && ar == null) ? null : (cash || 0) + (ar || 0);
-        return { op: 'div', parts: [d('Cash + Accounts Receivable', n), d('Current Liabilities', cl)], v: divide(n, cl) };
+        var cash = V('bs', 'cash', y), sec = V('bs', 'mktSecCur', y), ar = V('bs', 'ar', y);
+        var cl = V('bs', 'tcl', y);
+        var n = (cash == null && sec == null && ar == null)
+          ? null : (cash || 0) + (sec || 0) + (ar || 0);
+        return { op: 'div',
+                 parts: [d('Cash + Marketable Securities + Accounts Receivable', n),
+                         d('Current Liabilities', cl)],
+                 v: divide(n, cl) };
       },
-      note: 'Worksheet definition: cash plus receivables only. Marketable securities are excluded.' },
+      note: function (y) {
+        var cash = V('bs', 'cash', y), ar = V('bs', 'ar', y);
+        var sec = V('bs', 'mktSecCur', y), cl = V('bs', 'tcl', y);
+        if (sec == null || sec === 0) {
+          return 'Quick assets are cash, marketable securities and receivables. No current marketable securities here, so this matches the course fill-in sheet exactly.';
+        }
+        var narrow = divide((cash == null && ar == null) ? null : (cash || 0) + (ar || 0), cl);
+        return 'The course fill-in sheet omits marketable securities; on that narrower basis this would be '
+               + fmtX(narrow) + '.';
+      } },
 
     { g: 'liq', name: 'Accounts Receivable Turnover', unit: 'x', dir: 1, calc: function (y) {
         var s = V('is', 'netSales', y), a = avg('bs', 'ar', y);
@@ -1286,7 +1306,7 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
     card.appendChild(foot);
 
     if (r.note) {
-      var nt = el('div', null, r.note);
+      var nt = el('div', null, typeof r.note === 'function' ? r.note(y) : r.note);
       nt.style.cssText = 'font-size:11.5px;color:var(--muted);line-height:1.45;';
       card.appendChild(nt);
     }
