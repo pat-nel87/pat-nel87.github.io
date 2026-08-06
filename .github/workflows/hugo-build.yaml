@@ -43,18 +43,18 @@ jobs:
       - name: Install Dart Sass
         run: sudo snap install dart-sass
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Install Node.js dependencies
         run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
       - name: Cache Restore
         id: cache-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: |
             ${{ runner.temp }}/hugo_cache
@@ -70,13 +70,13 @@ jobs:
             --cacheDir "${{ runner.temp }}/hugo_cache"
       - name: Cache Save
         id: cache-save
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             ${{ runner.temp }}/hugo_cache
           key: ${{ steps.cache-restore.outputs.cache-primary-key }}
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./public
 
@@ -100,9 +100,10 @@ jobs:
       #     "Deployment cancelled". Re-running can never recover it -- only a
       #     NEW commit will.
       #
-      #  2. The `timeout` input does not raise the limit. deploy-pages@v4 caps
-      #     it internally at the 600000ms default, so passing 1800000 is
-      #     accepted, logged, and then ignored. Don't bother.
+      #  2. The `timeout` input does not raise the limit. deploy-pages caps it
+      #     internally at the 600000ms default, so passing 1800000 is accepted,
+      #     logged, and then ignored. Verified against v4; v5 is v4 plus a
+      #     Node 24 bump, with no change to the polling logic. Don't bother.
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
