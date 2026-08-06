@@ -318,13 +318,40 @@ tr.wb-r-gap td { height: 10px; padding: 0; }
 .wb-frac-row .wb-v { color: var(--ink-2); font-weight: 600; white-space: nowrap; }
 .wb-frac-bar { border-top: 1px solid var(--rule-strong); margin: 1px 0; }
 .wb-frac-op { color: var(--muted); font-weight: 600; text-align: center; padding: 0; line-height: 1; font-size: 12px; }
+.wb-result-wrap {
+  padding-left: 12px; border-left: 1px solid var(--rule);
+  min-width: 96px; text-align: right;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 1px;
+}
+.wb-result-year {
+  font-size: 10px; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600;
+}
 .wb-result {
   font-size: 24px; font-weight: 600; letter-spacing: -.02em;
   font-variant-numeric: tabular-nums; white-space: nowrap;
-  padding-left: 12px; border-left: 1px solid var(--rule);
-  min-width: 96px; text-align: right; color: var(--navy);
+  text-align: right; color: var(--navy);
 }
 .wb-result[data-empty="1"] { color: var(--muted); font-weight: 400; }
+
+/* fiscal-year selector on the ratio worksheet */
+.wb-yearpick {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin: 16px 0 0; padding: 10px 14px;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+  box-shadow: var(--shadow);
+}
+.wb-yearpick > label {
+  font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600;
+}
+.wb-yearpick select {
+  font: inherit; font-size: 14px; font-weight: 600; color: var(--navy);
+  background: var(--card); border: 1px solid var(--rule-strong);
+  border-radius: 2px; padding: 5px 8px;
+}
+.wb-yearpick select:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.wb-yearpick .wb-yearpick-note { font-size: 12px; color: var(--muted); }
 .wb-card-foot {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   flex-wrap: wrap; font-size: 12px; color: var(--muted);
@@ -526,7 +553,12 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
   <section class="wb-panel" role="tabpanel" id="panel-ratios" aria-labelledby="tab-ratios" hidden>
     <div class="wb-panel-head">
       <h2>Ratio Worksheet</h2>
-      <p>Every measure below shows its numerator and denominator with your actual figures substituted in, laid out the way the worksheet does. The prior-year column fills in wherever the data supports it.</p>
+      <p>Every measure below shows its numerator and denominator with your actual figures substituted in, laid out the way the worksheet does. The large figure on each card is the year selected here; the smaller line beneath it is the year before, for comparison.</p>
+      <div class="wb-yearpick">
+        <label for="f-ratioyear">Fiscal year</label>
+        <select id="f-ratioyear" data-meta="ratioYear"></select>
+        <span class="wb-yearpick-note" id="ratioyear-note"></span>
+      </div>
     </div>
     <div id="ratios-out"></div>
   </section>
@@ -744,6 +776,7 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
   function blank() {
     return {
       meta: { company: '', units: '1000000', shareUnits: '1000', days: '365',
+              ratioYear: '0',
               years: ['', '', ''], trendYears: ['', '', '', '', '', ''] },
       bs: {}, is: {}, eq: {}, cf: {}, trend: {}, trendLabels: {}
     };
@@ -1170,10 +1203,17 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
     }
   }
 
-  function ratioCard(r) {
-    var res0 = r.calc(0);
+  /* Which fiscal year the worksheet is computed for. 0 is the current year;
+     the card's comparison line is always the year immediately before it. */
+  function ratioYear() {
+    var y = parseInt(state.meta.ratioYear, 10);
+    return (isFinite(y) && y >= 0 && y <= 2) ? y : 0;
+  }
+
+  function ratioCard(r, y) {
+    var res0 = r.calc(y);
     var res1 = null;
-    try { res1 = r.calc(1); } catch (err) { res1 = null; }
+    try { res1 = r.calc(y + 1); } catch (err) { res1 = null; }
 
     var card = el('div', 'wb-card');
 
@@ -1211,14 +1251,19 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
     }
     work.appendChild(frac);
 
+    var wrap = el('div', 'wb-result-wrap');
+    wrap.appendChild(el('div', 'wb-result-year', yearLabel(y)));
     var out = el('div', 'wb-result', fmtByUnit(res0.v, r.unit));
     if (res0.v == null) out.setAttribute('data-empty', '1');
-    work.appendChild(out);
+    wrap.appendChild(out);
+    work.appendChild(wrap);
     card.appendChild(work);
 
     var foot = el('div', 'wb-card-foot');
     var prior = el('span', 'wb-prior');
-    prior.textContent = yearLabel(1) + ': ' + (res1 && res1.v != null ? fmtByUnit(res1.v, r.unit) : '—');
+    prior.textContent = (y + 1 > 2)
+      ? 'no earlier year in this workbook'
+      : yearLabel(y + 1) + ': ' + (res1 && res1.v != null ? fmtByUnit(res1.v, r.unit) : '—');
     foot.appendChild(prior);
 
     var flag = r.flag ? r.flag(res0.v) : null;
@@ -1248,7 +1293,7 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
     return card;
   }
 
-  function cashCard(m) {
+  function cashCard(m, y) {
     var card = el('div', 'wb-card');
     var head = el('div', 'wb-card-name');
     head.appendChild(el('span', null, m.name));
@@ -1257,21 +1302,27 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
 
     var work = el('div', 'wb-work');
     var frac = el('div', 'wb-frac');
-    for (var y = 0; y < 3; y++) {
-      var v = m.calc(y);
+    for (var i = 0; i < 3; i++) {
+      var v = m.calc(i);
       var row = el('div', 'wb-frac-row');
-      row.appendChild(el('span', 'wb-l', yearLabel(y)));
+      var lab = el('span', 'wb-l', yearLabel(i));
+      if (i === y) lab.style.color = 'var(--navy)';
+      row.appendChild(lab);
       var vs = el('span', 'wb-v', m.unit === 'pct' ? fmtPct(v) : fmt(v));
       if (v != null && v < 0) vs.classList.add('wb-neg');
+      if (i === y) vs.style.color = 'var(--navy)';
       row.appendChild(vs);
       frac.appendChild(row);
     }
     work.appendChild(frac);
 
-    var cur = m.calc(0), pri = m.calc(1);
+    var cur = m.calc(y), pri = (y + 1 > 2) ? null : m.calc(y + 1);
+    var wrap = el('div', 'wb-result-wrap');
+    wrap.appendChild(el('div', 'wb-result-year', yearLabel(y)));
     var out = el('div', 'wb-result', m.unit === 'pct' ? fmtPct(cur) : fmt(cur));
     if (cur == null) out.setAttribute('data-empty', '1');
-    work.appendChild(out);
+    wrap.appendChild(out);
+    work.appendChild(wrap);
     card.appendChild(work);
 
     var foot = el('div', 'wb-card-foot');
@@ -1290,6 +1341,30 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
   function refreshRatios() {
     var mount = document.getElementById('ratios-out');
     mount.innerHTML = '';
+    var y = ratioYear();
+
+    /* keep the year selector in step with the fiscal-year labels above */
+    var sel = document.getElementById('f-ratioyear');
+    if (sel) {
+      var want = [0, 1, 2].map(yearLabel).join('|');
+      if (sel.getAttribute('data-labels') !== want) {
+        sel.innerHTML = '';
+        [0, 1, 2].forEach(function (i) {
+          var o = document.createElement('option');
+          o.value = String(i);
+          o.textContent = yearLabel(i);
+          sel.appendChild(o);
+        });
+        sel.setAttribute('data-labels', want);
+      }
+      sel.value = String(y);
+      var note = document.getElementById('ratioyear-note');
+      if (note) {
+        note.textContent = y === 0
+          ? 'most recent year'
+          : 'comparing against ' + (y + 1 > 2 ? 'no earlier year' : yearLabel(y + 1));
+      }
+    }
 
     var groups = [
       { key: 'liq',  title: 'Liquidity &amp; Efficiency', sub: 'How readily the company can pay what it owes, and how quickly working capital cycles into cash.' },
@@ -1304,7 +1379,7 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
       mount.appendChild(el('p', 'wb-group-sub', grp.sub));
       var wrap = el('div', 'wb-cards');
       RATIOS.filter(function (r) { return r.g === grp.key; }).forEach(function (r) {
-        wrap.appendChild(ratioCard(r));
+        wrap.appendChild(ratioCard(r, y));
       });
       mount.appendChild(wrap);
     });
@@ -1315,7 +1390,7 @@ table.wb-dt thead th { color: var(--muted); font-weight: 600; font-size: 11px; t
     mount.appendChild(el('p', 'wb-group-sub',
       'EBIT, EBITDA and free cash flow across all three years. Note that the course gives two different free cash flow definitions — both are shown, since they answer slightly different questions.'));
     var cwrap = el('div', 'wb-cards');
-    CASH_METRICS.forEach(function (m) { cwrap.appendChild(cashCard(m)); });
+    CASH_METRICS.forEach(function (m) { cwrap.appendChild(cashCard(m, y)); });
     mount.appendChild(cwrap);
   }
 
