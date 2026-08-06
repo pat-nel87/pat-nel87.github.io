@@ -91,3 +91,12 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # The Pages deployment ID is the commit SHA. When this action times
+          # out it CANCELS that deployment, and the cancelled state sticks to
+          # the SHA -- every later re-run of the same commit then fails
+          # instantly with "Deployment cancelled" and can only be recovered by
+          # pushing a new commit. A backlog in GitHub's Pages publish fleet can
+          # exceed the 10 minute default, so wait longer rather than poison the
+          # commit. (Default: 600000.)
+          timeout: 1800000
